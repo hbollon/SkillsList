@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:skillslist/skill_card.dart';
+import 'package:skillslist/widgets/skill_block_card.dart';
+import 'package:skillslist/widgets/skill_card.dart';
 
 class SkillList extends StatelessWidget {
   SkillList({Key key}) : super(key: key);
 
   Widget buildRow() {
-    return SkillCard();
+    return SkillBlockCard();
   }
 
   Widget buildList() {

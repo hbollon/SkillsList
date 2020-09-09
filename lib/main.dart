@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:skillslist/skill_list.dart';
+import 'package:skillslist/widgets/skill_list.dart';
 
 void main() => runApp(MyApp());
 
