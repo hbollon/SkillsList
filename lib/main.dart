@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:skillslist/skill_list.dart';
 
 void main() => runApp(MyApp());
 
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
           title: Text('Welcome to Flutter'),
         ),
         body: Center(
-          child: Text('Hello World'),
+          child: SkillList(),
         ),
       ),
     );
