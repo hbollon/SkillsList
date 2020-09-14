@@ -6,9 +6,13 @@ class SkillBlockCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
     return Center(
       child: ExpansionTile(
-        title: Text("Gestion de projet"),
+        title: Text(
+          "Gestion de projet",
+          style: style,
+        ),
         children: [SkillCard(), SkillCard()],
       ),
     );

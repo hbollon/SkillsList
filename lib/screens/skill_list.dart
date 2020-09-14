@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:skillslist/widgets/skill_block_card.dart';
-import 'package:skillslist/widgets/skill_card.dart';
 
 class SkillList extends StatelessWidget {
   SkillList({Key key}) : super(key: key);
@@ -19,6 +18,17 @@ class SkillList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return buildList();
+    return MaterialApp(
+      title: 'Welcome to Flutter',
+      theme: ThemeData(primarySwatch: Colors.deepPurple),
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Welcome to Flutter'),
+        ),
+        body: Center(
+          child: buildList(),
+        ),
+      ),
+    );
   }
 }

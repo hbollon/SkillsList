@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:skillslist/widgets/skill_list.dart';
+import 'package:skillslist/screens/skill_list.dart';
+import 'package:skillslist/screens/login.dart';
 
 void main() => runApp(MyApp());
 
@@ -12,12 +13,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Welcome to Flutter',
+      theme: ThemeData(primarySwatch: Colors.deepPurple),
       home: Scaffold(
         appBar: AppBar(
           title: Text('Welcome to Flutter'),
         ),
         body: Center(
-          child: SkillList(),
+          child: LoginPage(),
         ),
       ),
     );
