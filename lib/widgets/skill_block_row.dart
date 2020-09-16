@@ -10,6 +10,12 @@ class SkillBlockRow extends StatelessWidget {
   final String title;
   final double value;
 
+  final TextStyle style = TextStyle(
+      fontFamily: 'Montserrat',
+      fontSize: 20.0,
+      color: Colors.white,
+      fontWeight: FontWeight.bold);
+
   @override
   Widget build(BuildContext context) {
     final blockThumbnail = new Container(
@@ -34,6 +40,13 @@ class SkillBlockRow extends StatelessWidget {
               valueColor: new AlwaysStoppedAnimation<Color>(
                   getColorFromProgress(this.value)),
             )));
+    final blockTitle = new Container(
+        margin: new EdgeInsets.symmetric(horizontal: 16.0),
+        alignment: FractionalOffset.center,
+        child: new Text(
+          this.title,
+          style: this.style,
+        ));
     final blockCard = new Container(
       height: 124.0,
       decoration: new BoxDecoration(
@@ -59,6 +72,7 @@ class SkillBlockRow extends StatelessWidget {
           children: <Widget>[
             blockCard,
             blockThumbnail,
+            blockTitle,
             blockProgress,
           ],
         ));
