@@ -1,6 +1,7 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
+import 'package:skillslist/widgets/skill_list.dart';
+
+import '../utils.dart';
 
 class SkillBlockRow extends StatelessWidget {
   SkillBlockRow(this.title, this.imgPath, this.value, {Key key})
@@ -38,7 +39,7 @@ class SkillBlockRow extends StatelessWidget {
               strokeWidth: 6,
               backgroundColor: Colors.black,
               valueColor: new AlwaysStoppedAnimation<Color>(
-                  getColorFromProgress(this.value)),
+                  Utils.getColorFromProgress(this.value)),
             )));
     final blockTitle = new Container(
         margin: new EdgeInsets.symmetric(horizontal: 16.0),
@@ -62,27 +63,27 @@ class SkillBlockRow extends StatelessWidget {
         ],
       ),
     );
-    return new Container(
-        height: 120.0,
-        margin: const EdgeInsets.symmetric(
-          vertical: 16.0,
-          horizontal: 24.0,
-        ),
-        child: new Stack(
-          children: <Widget>[
-            blockCard,
-            blockThumbnail,
-            blockTitle,
-            blockProgress,
-          ],
-        ));
-  }
-
-  Color getColorFromProgress(double value) {
-    if (value >= 0.8)
-      return Colors.green;
-    else if (value >= 0.4) return Colors.orange[600];
-
-    return Colors.red[700];
+    return new GestureDetector(
+      child: Container(
+          height: 120.0,
+          margin: const EdgeInsets.symmetric(
+            vertical: 16.0,
+            horizontal: 24.0,
+          ),
+          child: new Stack(
+            children: <Widget>[
+              blockCard,
+              blockThumbnail,
+              blockTitle,
+              blockProgress,
+            ],
+          )),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => SkillListPage(this.value)),
+        );
+      },
+    );
   }
 }
