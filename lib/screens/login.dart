@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:skillslist/screens/skill_list.dart';
-import 'package:skillslist/screens/test_list.dart';
+import 'package:skillslist/screens/skill_block_list.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -41,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => SkillListNew()),
+            MaterialPageRoute(builder: (context) => SkillBlockList()),
           );
         },
         child: Text("Login",

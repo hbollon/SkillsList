@@ -1,29 +1,5 @@
 import 'package:flutter/material.dart';
 
-class SkillListNew extends StatelessWidget {
-  SkillListNew({Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
-    return MaterialApp(
-      title: 'Welcome to Flutter',
-      theme: ThemeData(primarySwatch: Colors.deepPurple),
-      home: Scaffold(
-          appBar: AppBar(
-            title: Text('Welcome to Flutter'),
-          ),
-          body: new Column(
-            children: <Widget>[
-              new SkillBlockRow("Python", "assets/python.png"),
-              new SkillBlockRow("Java", "assets/java.png"),
-              new SkillBlockRow("C++", "assets/cpp.png"),
-            ],
-          )),
-    );
-  }
-}
-
 class SkillBlockRow extends StatelessWidget {
   SkillBlockRow(this.title, this.imgPath, {Key key}) : super(key: key);
 
