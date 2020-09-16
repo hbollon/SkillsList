@@ -1,22 +1,39 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 
 class SkillBlockRow extends StatelessWidget {
-  SkillBlockRow(this.title, this.imgPath, {Key key}) : super(key: key);
+  SkillBlockRow(this.title, this.imgPath, this.value, {Key key})
+      : super(key: key);
 
   final String imgPath;
   final String title;
+  final double value;
 
   @override
   Widget build(BuildContext context) {
     final blockThumbnail = new Container(
-      margin: new EdgeInsets.symmetric(vertical: 16.0),
+      margin: new EdgeInsets.symmetric(horizontal: 12.0),
       alignment: FractionalOffset.centerLeft,
       child: new Image(
         image: new AssetImage(imgPath),
-        height: 92.0,
-        width: 92.0,
+        height: 64.0,
+        width: 64.0,
       ),
     );
+    final blockProgress = new Container(
+        margin: new EdgeInsets.symmetric(horizontal: 16.0),
+        alignment: FractionalOffset.centerRight,
+        child: new SizedBox(
+            height: 52,
+            width: 52,
+            child: new CircularProgressIndicator(
+              value: this.value,
+              strokeWidth: 6,
+              backgroundColor: Colors.black,
+              valueColor: new AlwaysStoppedAnimation<Color>(
+                  getColorFromProgress(this.value)),
+            )));
     final blockCard = new Container(
       height: 124.0,
       decoration: new BoxDecoration(
@@ -42,7 +59,16 @@ class SkillBlockRow extends StatelessWidget {
           children: <Widget>[
             blockCard,
             blockThumbnail,
+            blockProgress,
           ],
         ));
+  }
+
+  Color getColorFromProgress(double value) {
+    if (value >= 0.8)
+      return Colors.green;
+    else if (value >= 0.4) return Colors.orange[600];
+
+    return Colors.red[700];
   }
 }

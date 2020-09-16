@@ -16,9 +16,9 @@ class SkillBlockList extends StatelessWidget {
           ),
           body: ListView(
             children: [
-              SkillBlockRow("Python", "assets/python.png"),
-              SkillBlockRow("Java", "assets/java.png"),
-              SkillBlockRow("C++", "assets/cpp.png"),
+              SkillBlockRow("Python", "assets/python.png", 0.3),
+              SkillBlockRow("Java", "assets/java.png", 0.6),
+              SkillBlockRow("C++", "assets/cpp.png", 0.9),
             ],
           )),
     );
