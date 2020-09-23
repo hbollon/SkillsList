@@ -23,6 +23,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  expansion_card: ^0.1.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -64,6 +65,7 @@ flutter:
     - python.png
     - java.png
     - cpp.png
+    - test.gif
 
   fonts:
       - family: Montserrat

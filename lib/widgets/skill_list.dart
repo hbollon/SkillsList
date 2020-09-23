@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:expansion_card/expansion_card.dart';
 
 import '../utils.dart';
 
@@ -36,30 +37,83 @@ class _SkillListPageState extends State<SkillListPage> {
             body: Container(
                 child:
                     //BlockHeader(this.value, this.desc, this.title, this.imgpath),
-                    ListView.builder(
-                        itemCount: 10,
-                        itemBuilder: (context, index) => (index == 0)
-                            ? new BlockHeader(
-                                this.value, this.desc, this.title, this.imgpath)
-                            : new Card(
-                                shape: RoundedRectangleBorder(
-                                    side: new BorderSide(
-                                        color: Colors.white, width: 2.0),
-                                    borderRadius: BorderRadius.circular(4.0)),
-                                child: new Container(
-                                    margin: EdgeInsets.all(32.0),
-                                    child: Row(
-                                      children: [
-                                        Text("Skill"),
-                                        Checkbox(
-                                            value: selected[index],
-                                            onChanged: (bool newValue) {
-                                              setState(() {
-                                                selected[index] = newValue;
-                                              });
-                                            })
-                                      ],
-                                    )))))));
+                    ListView.separated(
+              itemCount: 10,
+              itemBuilder: (context, index) => (index == 0)
+                  ? new BlockHeader(
+                      this.value, this.desc, this.title, this.imgpath)
+                  : ExpansionCard(
+                      background: Image.asset(
+                        "assets/test.gif",
+                        fit: BoxFit.cover,
+                      ),
+                      title: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              "Header",
+                            ),
+                            Text(
+                              "Sub",
+                            ),
+                          ],
+                        ),
+                      ),
+                      children: <Widget>[
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 7),
+                          child: Text(
+                            "Content goes over here !",
+                          ),
+                        )
+                      ],
+                    ),
+              separatorBuilder: (BuildContext context, int index) {
+                return SizedBox(
+                  height: 10,
+                );
+              },
+            ))));
+
+    /* new InkWell(
+                                child: ExpansionTile(
+                                    title: new Card(
+                                        color: selected[index]
+                                            ? Color(0xffc5b1e7)
+                                            : Colors.white,
+                                        shape: RoundedRectangleBorder(
+                                            side: new BorderSide(
+                                                color: selected[index]
+                                                    ? Color(0xffc5b1e7)
+                                                    : Colors.white,
+                                                width: 2.0),
+                                            borderRadius:
+                                                BorderRadius.circular(4.0)),
+                                        child: new Container(
+                                          margin: EdgeInsets.all(32.0),
+                                          child: Row(
+                                            children: [
+                                              Text("Skill"),
+                                              Checkbox(
+                                                  value: selected[index],
+                                                  onChanged: (bool newValue) {
+                                                    setState(() {
+                                                      selected[index] =
+                                                          newValue;
+                                                    });
+                                                  }),
+                                            ],
+                                          ),
+                                        ))),
+                                onTap: () {
+                                  setState(() {
+                                    selected[index] = !selected[index];
+                                  });
+                                },
+                                splashColor: Colors.deepPurpleAccent,
+                              ) */
   }
 }
 
