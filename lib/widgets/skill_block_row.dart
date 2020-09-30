@@ -81,7 +81,9 @@ class SkillBlockRow extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => SkillListPage(this.value)),
+          MaterialPageRoute(
+              builder: (context) =>
+                  SkillListPage(this.value, this.title, this.imgPath)),
         );
       },
     );

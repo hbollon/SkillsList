@@ -11,6 +11,21 @@ public class User {
     private String lastName;
     private Role userRole;
     private ArrayList<SkillBlock> skillsBlocks;
+    
+    public User(int dbId, String username, String password, String firstName, String lastName) {
+        this.dbId = dbId;
+        this.username = username;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    public User(String username, String password, String firstName, String lastName) {
+        this.username = username;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
 
     public User(int dbId, String username, String password, String firstName, String lastName, Role userRole, ArrayList<SkillBlock> skillsBlocks) {
         this.dbId = dbId;
