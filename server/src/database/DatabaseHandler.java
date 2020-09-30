@@ -59,7 +59,7 @@ public class DatabaseHandler {
 
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setString(1, u.getUsername());
-            statement.setString(2, HashUtils.hash(u.getPassword().toCharArray(), salt.getBytes()).toString());
+            statement.setString(2, HashUtils.generateSecurePassword(u.getPassword(), salt));
             statement.setString(3, salt);
             statement.setString(4, u.getFirstName());
             statement.setString(5, u.getLastName());
@@ -93,8 +93,22 @@ public class DatabaseHandler {
         }
     }
 
-    public void connectUser() {
-
+    public User connectUser(String login, String password) {
+        String sql = "SELECT * FROM user WHERE `" + USER_DB_USERNAME + "`='" + login + "'";
+        System.out.println(sql);
+        try {
+            ResultSet rs = statement.executeQuery(sql);
+            if(rs.next()){
+                if(HashUtils.verifyUserPassword(password, rs.getString(3), rs.getString(4))){
+                    System.out.println("User succesfully logged in!");
+                    return new User(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(5), rs.getString(6));
+                }
+            }
+            System.out.println("User not recognized!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
