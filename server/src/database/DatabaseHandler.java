@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import data.User;
+import utils.HashUtils;
 
 /**
  * DatabaseHandler
@@ -21,6 +22,7 @@ public class DatabaseHandler {
     private final String USER_TABLE_NAME = "user";
     private final String USER_DB_USERNAME = "username";
     private final String USER_DB_PASSWORD = "password";
+    private final String USER_DB_PASSWORD_SALT = "salt";
     private final String USER_DB_FIRSTNAME = "first_name";
     private final String USER_DB_LASTNAME = "last_name";
 
@@ -42,7 +44,7 @@ public class DatabaseHandler {
     private void initDb() throws SQLException {
         statement = conn.createStatement();
         String sql = "CREATE TABLE IF NOT EXISTS user " + "(id INT NOT NULL AUTO_INCREMENT, "
-                + " username VARCHAR(255), " + " password VARCHAR(255), " + " first_name VARCHAR(255), "
+                + " username VARCHAR(255), " + " password VARCHAR(255), " + "salt VARCHAR(255)," + " first_name VARCHAR(255), "
                 + " last_name VARCHAR(255), " + " PRIMARY KEY ( id ))";
 
         statement.executeUpdate(sql);
@@ -51,13 +53,16 @@ public class DatabaseHandler {
     public void insertUser(User u) {
         try {
             String sql = "INSERT INTO " + USER_TABLE_NAME + "(`" + USER_DB_USERNAME + "`, `" + USER_DB_PASSWORD + "`, `"
-            + USER_DB_FIRSTNAME + "`, `" + USER_DB_LASTNAME + "`) VALUES (?, ?, ?, ?)";
+            + USER_DB_PASSWORD_SALT + "`, `" + USER_DB_FIRSTNAME + "`, `" + USER_DB_LASTNAME + "`) VALUES (?, ?, ?, ?, ?)";
+
+            String salt = HashUtils.getSalt(30);
 
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setString(1, u.getUsername());
-            statement.setString(2, u.getPassword());
-            statement.setString(3, u.getFirstName());
-            statement.setString(4, u.getLastName());
+            statement.setString(2, HashUtils.hash(u.getPassword().toCharArray(), salt.getBytes()).toString());
+            statement.setString(3, salt);
+            statement.setString(4, u.getFirstName());
+            statement.setString(5, u.getLastName());
 
             int result = statement.executeUpdate();
             if (result > 0) {
@@ -89,7 +94,7 @@ public class DatabaseHandler {
     }
 
     public void connectUser() {
-        
+
     }
 
     /**
