@@ -3,6 +3,7 @@ package database;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -22,6 +23,8 @@ public class DatabaseHandler {
     private final String USER_DB_PASSWORD = "password";
     private final String USER_DB_FIRSTNAME = "first_name";
     private final String USER_DB_LASTNAME = "last_name";
+
+    private final String[] TABLES = {USER_TABLE_NAME};
 
     private Connection conn;
     private Statement statement;
@@ -87,6 +90,23 @@ public class DatabaseHandler {
 
     public void connectUser() {
 
+    }
+
+    /**
+     * Clear all table of the db
+     */
+    private void clearAllTables(){
+        for (String table : TABLES) {
+            try {
+                statement.executeUpdate("TRUNCATE " + table);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void resetAll() {
+        clearAllTables();
     }
 
 }
