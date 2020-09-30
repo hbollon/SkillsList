@@ -1,5 +1,7 @@
 package data;
 
+import java.util.Objects;
+
 public class Role {
     private String roleName;
 

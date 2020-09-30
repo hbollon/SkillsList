@@ -1,12 +1,12 @@
 package database;
 
+import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import data.User;
-
-import java.sql.Connection;
 
 /**
  * DatabaseHandler
@@ -65,6 +65,28 @@ public class DatabaseHandler {
         }
     }
 
-    public void connectUser()
+    public void updateUser(User u) {
+        try {
+            String sql = "UPDATE " + USER_TABLE_NAME + " SET " + USER_DB_USERNAME + "=?, "
+            + USER_DB_FIRSTNAME + "=?, " + USER_DB_LASTNAME + "=? WHERE " + USER_DB_USERNAME + "=?";
+
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1, u.getUsername());
+            statement.setString(2, u.getFirstName());
+            statement.setString(3, u.getLastName());
+            statement.setString(4, u.getUsername());
+
+            int result = statement.executeUpdate();
+            if (result > 0) {
+                System.out.println("The user was updated successfully!");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void connectUser() {
+
+    }
 
 }
