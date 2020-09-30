@@ -93,9 +93,17 @@ public class DatabaseHandler {
         }
     }
 
+    public void deleteUser(String username){
+        String sql = "DELETE FROM user WHERE `" + USER_DB_USERNAME + "`='" + username + "'";
+        try {
+            statement.executeUpdate(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public User connectUser(String login, String password) {
         String sql = "SELECT * FROM user WHERE `" + USER_DB_USERNAME + "`='" + login + "'";
-        System.out.println(sql);
         try {
             ResultSet rs = statement.executeQuery(sql);
             if(rs.next()){
