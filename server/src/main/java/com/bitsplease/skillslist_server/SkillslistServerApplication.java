@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SkillslistServerApplication {
 
 	public static void main(String[] args) {
+		database.DatabaseHandler db = new database.DatabaseHandler();
 		SpringApplication.run(SkillslistServerApplication.class, args);
 	}
 
