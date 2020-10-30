@@ -1,4 +1,4 @@
-package data;
+package com.bitsplease.skillslist_server.data;
 
 import java.util.Objects;
 
