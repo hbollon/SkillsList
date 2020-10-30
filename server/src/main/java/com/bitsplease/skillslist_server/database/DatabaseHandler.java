@@ -1,14 +1,10 @@
-package database;
+package com.bitsplease.skillslist_server.database;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 
-import data.User;
-import utils.HashUtils;
+import com.bitsplease.skillslist_server.data.User;
+import com.bitsplease.skillslist_server.utils.HashUtils;
+
+import java.sql.*;
 
 /**
  * DatabaseHandler

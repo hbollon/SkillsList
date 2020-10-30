@@ -1,9 +1,9 @@
-package data;
+package com.bitsplease.skillslist_server.data;
+
+import utils.Pair;
 
 import java.util.ArrayList;
 import java.util.Objects;
-
-import utils.Pair;
 
 public class SkillBlock {
     private String blockName;

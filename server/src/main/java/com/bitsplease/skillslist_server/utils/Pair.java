@@ -1,4 +1,4 @@
-package utils;
+package com.bitsplease.skillslist_server.utils;
 
 import java.io.Serializable;
 import java.util.Objects;
