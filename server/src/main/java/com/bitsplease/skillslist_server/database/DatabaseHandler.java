@@ -1,6 +1,5 @@
 package com.bitsplease.skillslist_server.database;
 
-
 import com.bitsplease.skillslist_server.data.User;
 import com.bitsplease.skillslist_server.utils.HashUtils;
 
