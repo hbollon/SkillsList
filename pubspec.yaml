@@ -24,7 +24,8 @@ dependencies:
   flutter:
     sdk: flutter
   expansion_card: ^0.1.0
-  web_socket_channel: 1.1.0
+  http: ^0.12.2
+  sprintf: "^4.0.0"
 
 
   # The following adds the Cupertino Icons font to your application.

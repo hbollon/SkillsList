@@ -1,6 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:skillslist/screens/skill_block_list.dart';
 
+import 'package:http/http.dart' as http;
+import 'package:sprintf/sprintf.dart';
+
+Future<bool> login(String username, String password) async {
+  final url = sprintf("http://192.168.43.136:8080/login?login=%s&password=%s",
+      [username, password]);
+  final response = await http.get(url);
+  print(response.body);
+  return true;
+}
+
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
   @override
@@ -12,7 +23,9 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController usernameController = new TextEditingController();
     final usernameField = TextField(
+      controller: usernameController,
       obscureText: false,
       style: style,
       decoration: InputDecoration(
@@ -21,7 +34,10 @@ class _LoginPageState extends State<LoginPage> {
           border:
               OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
     );
+
+    TextEditingController passwordController = new TextEditingController();
     final passwordField = TextField(
+      controller: passwordController,
       obscureText: true,
       style: style,
       decoration: InputDecoration(
@@ -30,6 +46,7 @@ class _LoginPageState extends State<LoginPage> {
           border:
               OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
     );
+
     final loginButon = Material(
       elevation: 5.0,
       borderRadius: BorderRadius.circular(30.0),
@@ -38,6 +55,7 @@ class _LoginPageState extends State<LoginPage> {
         minWidth: MediaQuery.of(context).size.width,
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
         onPressed: () {
+          login(usernameController.text, passwordController.text);
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => SkillBlockList()),
