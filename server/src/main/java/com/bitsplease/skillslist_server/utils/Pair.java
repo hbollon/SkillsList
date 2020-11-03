@@ -4,13 +4,14 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * Custom Pair class who implements serialization
- * Use for data transfer between devices (Game instance, Object)
+ * Custom Pair class which implements Serializable
+ * 
  * @param <F> -> Game
  * @param <S> -> Object
  */
 
 public class Pair<F, S> implements Serializable {
+    private static final long serialVersionUID = 2665563325492844181L;
     public final F first;
     public final S second;
 
