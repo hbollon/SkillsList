@@ -1,15 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:skillslist/models/User.dart';
 import 'package:skillslist/screens/skill_block_list.dart';
 
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:sprintf/sprintf.dart';
 
 Future<bool> login(String username, String password) async {
+  print("Logging in...");
   final url = sprintf("http://192.168.43.136:8080/login?login=%s&password=%s",
       [username, password]);
   final response = await http.get(url);
   print(response.body);
-  return true;
+
+  var jsonResponse = json.decode(response.body);
+  if (jsonResponse["content"] == "") {
+    print("Error during logging, received data empty!");
+    return false;
+  } else {
+    final userData = json.decode(jsonResponse["content"]);
+    User.loggedInUser = new User(userData["dbId"], userData["username"],
+        userData["firstName"], userData["lastName"]);
+    print("Successfully logged in!");
+    return true;
+  }
 }
 
 class LoginPage extends StatefulWidget {

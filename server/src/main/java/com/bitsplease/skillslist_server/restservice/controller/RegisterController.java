@@ -14,7 +14,6 @@ import java.util.concurrent.atomic.AtomicLong;
 @RestController
 public class RegisterController {
 
-    private static final String template = "Content: %s";
     private final AtomicLong counter = new AtomicLong();
 
     @GetMapping("/register")
@@ -29,9 +28,9 @@ public class RegisterController {
         if(success){
             Gson gson = new Gson();
             String userJson = gson.toJson(user);
-            return new Register(counter.incrementAndGet(), String.format(template, userJson), success);
+            return new Register(counter.incrementAndGet(), userJson, success);
         } else {
-            return new Register(counter.incrementAndGet(), String.format(template, ""), success);
+            return new Register(counter.incrementAndGet(), "", success);
         }
     }
 }

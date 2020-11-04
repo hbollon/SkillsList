@@ -14,7 +14,6 @@ import java.util.concurrent.atomic.AtomicLong;
 @RestController
 public class LoginController {
 
-    private static final String template = "Content: %s";
     private final AtomicLong counter = new AtomicLong();
 
     @GetMapping("/login")
@@ -23,9 +22,9 @@ public class LoginController {
         if(user != null){
             Gson gson = new Gson();
             String userJson = gson.toJson(user);
-            return new Login(counter.incrementAndGet(), String.format(template, userJson));
+            return new Login(counter.incrementAndGet(), userJson);
         } else {
-            return new Login(counter.incrementAndGet(), String.format(template, ""));
+            return new Login(counter.incrementAndGet(), "");
         }
     }
 }
