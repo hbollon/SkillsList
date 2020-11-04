@@ -34,6 +34,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
+  bool _buttonIsActivated = true;
 
   @override
   Widget build(BuildContext context) {
@@ -64,17 +65,35 @@ class _LoginPageState extends State<LoginPage> {
     final loginButon = Material(
       elevation: 5.0,
       borderRadius: BorderRadius.circular(30.0),
-      color: Colors.deepPurple,
+      color: _buttonIsActivated ? Colors.deepPurple : Colors.grey,
       child: MaterialButton(
         minWidth: MediaQuery.of(context).size.width,
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-        onPressed: () {
-          login(usernameController.text, passwordController.text);
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => SkillBlockList()),
-          );
-        },
+        onPressed: !_buttonIsActivated
+            ? null
+            : () {
+                setState(() {
+                  _buttonIsActivated = !_buttonIsActivated;
+                });
+                Future<bool> output =
+                    login(usernameController.text, passwordController.text);
+                output.then((value) {
+                  if (value) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SkillBlockList()),
+                    );
+                  } else {
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text(
+                          "Logging failed! Please check your credentials."),
+                    ));
+                  }
+                });
+                setState(() {
+                  _buttonIsActivated = !_buttonIsActivated;
+                });
+              },
         child: Text("Login",
             textAlign: TextAlign.center,
             style: style.copyWith(
