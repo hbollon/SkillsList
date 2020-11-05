@@ -1,6 +1,5 @@
 package com.bitsplease.skillslist_server.database;
 
-
 import com.bitsplease.skillslist_server.data.User;
 import com.bitsplease.skillslist_server.utils.HashUtils;
 
@@ -46,7 +45,7 @@ public class DatabaseHandler {
         statement.executeUpdate(sql);
     }
 
-    public void insertUser(User u) {
+    public boolean insertUser(User u) {
         try {
             String sql = "INSERT INTO " + USER_TABLE_NAME + "(`" + USER_DB_USERNAME + "`, `" + USER_DB_PASSWORD + "`, `"
             + USER_DB_PASSWORD_SALT + "`, `" + USER_DB_FIRSTNAME + "`, `" + USER_DB_LASTNAME + "`) VALUES (?, ?, ?, ?, ?)";
@@ -63,13 +62,17 @@ public class DatabaseHandler {
             int result = statement.executeUpdate();
             if (result > 0) {
                 System.out.println("A new user was inserted successfully!");
+                return true;
+            } else {
+                return false;
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
-    public void updateUser(User u) {
+    public boolean updateUser(User u) {
         try {
             String sql = "UPDATE " + USER_TABLE_NAME + " SET " + USER_DB_USERNAME + "=?, "
             + USER_DB_FIRSTNAME + "=?, " + USER_DB_LASTNAME + "=? WHERE " + USER_DB_USERNAME + "=?";
@@ -83,18 +86,29 @@ public class DatabaseHandler {
             int result = statement.executeUpdate();
             if (result > 0) {
                 System.out.println("The user was updated successfully!");
+                return true;
+            } else {
+                return false;
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
-    public void deleteUser(String username){
+    public boolean deleteUser(String username){
         String sql = "DELETE FROM user WHERE `" + USER_DB_USERNAME + "`='" + username + "'";
         try {
-            statement.executeUpdate(sql);
+            int result = statement.executeUpdate(sql);
+            if (result > 0) {
+                System.out.println("The user was updated successfully!");
+                return true;
+            } else {
+                return false;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -116,7 +130,7 @@ public class DatabaseHandler {
     }
 
     /**
-     * Clear all table of the db
+     * Clear all tables of the db
      */
     private void clearAllTables(){
         for (String table : TABLES) {
