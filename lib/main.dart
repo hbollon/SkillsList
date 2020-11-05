@@ -8,6 +8,8 @@ import 'package:skillslist/screens/login.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+  static String ip = "192.168.43.136";
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

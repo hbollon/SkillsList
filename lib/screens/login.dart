@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:skillslist/main.dart';
 import 'package:skillslist/models/User.dart';
 import 'package:skillslist/screens/skill_block_list.dart';
 
@@ -8,8 +9,8 @@ import 'package:sprintf/sprintf.dart';
 
 Future<bool> login(String username, String password) async {
   print("Logging in...");
-  final url = sprintf("http://192.168.43.136:8080/login?login=%s&password=%s",
-      [username, password]);
+  final url = sprintf("http://%s:8080/login?login=%s&password=%s",
+      [MyApp.ip, username, password]);
   final response = await http.get(url);
   print(response.body);
 
