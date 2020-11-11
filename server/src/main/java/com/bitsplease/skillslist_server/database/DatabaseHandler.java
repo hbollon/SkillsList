@@ -46,7 +46,19 @@ public class DatabaseHandler {
     }
 
     public boolean insertUser(User u) {
+        System.out.println("Trying to register new user...");
+        System.out.println("Username : " + u.getUsername());
+        System.out.println("Password : " + u.getPassword());
+        System.out.println("First Name : " + u.getFirstName());
+        System.out.println("Last Name : " + u.getLastName());
         try {
+            String check_existing_request = "SELECT * FROM user WHERE `" + USER_DB_USERNAME + "`='" + u.getUsername() + "'";
+
+            ResultSet rs = statement.executeQuery(check_existing_request);
+            if(rs.next()) {
+                System.out.println("Error: User already exists !");
+                return false;
+            }
             String sql = "INSERT INTO " + USER_TABLE_NAME + "(`" + USER_DB_USERNAME + "`, `" + USER_DB_PASSWORD + "`, `"
             + USER_DB_PASSWORD_SALT + "`, `" + USER_DB_FIRSTNAME + "`, `" + USER_DB_LASTNAME + "`) VALUES (?, ?, ?, ?, ?)";
 
