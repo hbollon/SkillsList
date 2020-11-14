@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:skillslist/main.dart';
 import 'package:skillslist/models/User.dart';
+import 'package:skillslist/screens/register.dart';
 import 'package:skillslist/screens/skill_block_list.dart';
 
 import 'dart:convert';
@@ -63,7 +64,7 @@ class _LoginPageState extends State<LoginPage> {
               OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
     );
 
-    final loginButon = Material(
+    final loginButton = Material(
       elevation: 5.0,
       borderRadius: BorderRadius.circular(30.0),
       color: _buttonIsActivated ? Colors.deepPurple : Colors.grey,
@@ -102,6 +103,26 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
 
+    final registerButon = Material(
+      elevation: 5.0,
+      borderRadius: BorderRadius.circular(30.0),
+      color: Colors.deepPurple,
+      child: MaterialButton(
+        minWidth: MediaQuery.of(context).size.width,
+        padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => RegisterPage()),
+          );
+        },
+        child: Text("Register",
+            textAlign: TextAlign.center,
+            style: style.copyWith(
+                color: Colors.white, fontWeight: FontWeight.bold)),
+      ),
+    );
+
     return Scaffold(
       body: Center(
         child: Container(
@@ -113,10 +134,10 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 SizedBox(
-                    height: 155.0,
+                    height: 140.0,
                     child: Icon(
                       Icons.supervised_user_circle,
-                      size: 155.0,
+                      size: 140.0,
                     )),
                 SizedBox(height: 45.0),
                 usernameField,
@@ -125,7 +146,11 @@ class _LoginPageState extends State<LoginPage> {
                 SizedBox(
                   height: 35.0,
                 ),
-                loginButon,
+                loginButton,
+                SizedBox(
+                  height: 15.0,
+                ),
+                registerButon,
                 SizedBox(
                   height: 15.0,
                 ),
