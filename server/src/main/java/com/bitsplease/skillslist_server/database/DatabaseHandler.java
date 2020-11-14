@@ -1,5 +1,6 @@
 package com.bitsplease.skillslist_server.database;
 
+import com.bitsplease.skillslist_server.data.SkillBlock;
 import com.bitsplease.skillslist_server.data.User;
 import com.bitsplease.skillslist_server.utils.HashUtils;
 
@@ -20,8 +21,18 @@ public class DatabaseHandler {
     private final String USER_DB_PASSWORD_SALT = "salt";
     private final String USER_DB_FIRSTNAME = "first_name";
     private final String USER_DB_LASTNAME = "last_name";
+    private final String USER_DB_SQL = "CREATE TABLE IF NOT EXISTS user " + "(id INT NOT NULL AUTO_INCREMENT, "
+    + " username VARCHAR(255), " + " password VARCHAR(255), " + "salt VARCHAR(255)," + " first_name VARCHAR(255), "
+    + " last_name VARCHAR(255), " + " PRIMARY KEY ( id ))";
 
-    private final String[] TABLES = {USER_TABLE_NAME};
+    private final String SKILLBLOCK_TABLE_NAME = "skillblock";
+    private final String SKILLBLOCK_DB_NAME = "name";
+    private final String SKILLBLOCK_DB_DESC = "description";
+    private final String SKILLBLOCK_DB_SQL = "CREATE TABLE IF NOT EXISTS skillblock " + "(id INT NOT NULL AUTO_INCREMENT, "
+    + " name VARCHAR(255), " + " description VARCHAR(255), " + " PRIMARY KEY ( id ))";
+
+    private final String[] TABLES = {USER_TABLE_NAME, SKILLBLOCK_TABLE_NAME};
+    private final String[] TABLES_SQL = {USER_DB_SQL, SKILLBLOCK_DB_SQL};
 
     private Connection conn;
     private Statement statement;
@@ -38,12 +49,31 @@ public class DatabaseHandler {
 
     private void initDb() throws SQLException {
         statement = conn.createStatement();
-        String sql = "CREATE TABLE IF NOT EXISTS user " + "(id INT NOT NULL AUTO_INCREMENT, "
-                + " username VARCHAR(255), " + " password VARCHAR(255), " + "salt VARCHAR(255)," + " first_name VARCHAR(255), "
-                + " last_name VARCHAR(255), " + " PRIMARY KEY ( id ))";
-
-        statement.executeUpdate(sql);
+        for (String sql : TABLES_SQL) {
+            statement.executeUpdate(sql);
+        }
     }
+
+    /**
+     * Clear all tables of the db
+     */
+    private void clearAllTables(){
+        for (String table : TABLES) {
+            try {
+                statement.executeUpdate("TRUNCATE " + table);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void resetAll() {
+        clearAllTables();
+    }
+
+    /**
+     * Users Interactions
+     */
 
     public boolean insertUser(User u) {
         System.out.println("Trying to register new user...");
@@ -142,20 +172,76 @@ public class DatabaseHandler {
     }
 
     /**
-     * Clear all tables of the db
+     * SkillBlock Interactions
      */
-    private void clearAllTables(){
-        for (String table : TABLES) {
-            try {
-                statement.executeUpdate("TRUNCATE " + table);
-            } catch (SQLException e) {
-                e.printStackTrace();
+
+    public boolean insertSkillBlock(SkillBlock s) {
+        System.out.println("Trying to insert new skillblock...");
+        try {
+            String check_existing_request = "SELECT * FROM skillblock WHERE `" + SKILLBLOCK_DB_NAME + "`='" + s.getBlockName() + "'";
+
+            ResultSet rs = statement.executeQuery(check_existing_request);
+            if(rs.next()) {
+                System.out.println("Error: SkillBlock already exists !");
+                return false;
             }
+            String sql = "INSERT INTO " + SKILLBLOCK_TABLE_NAME + "(`" + SKILLBLOCK_DB_NAME + "`, `" + SKILLBLOCK_DB_DESC + "`) VALUES (?, ?)";
+
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1, s.getBlockName());
+            statement.setString(2, s.getBlockDesc());
+
+            int result = statement.executeUpdate();
+            if (result > 0) {
+                System.out.println("A new skillblock was inserted successfully!");
+                return true;
+            } else {
+                System.out.println("Skillblock insert failed!");
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
-    public void resetAll() {
-        clearAllTables();
+    public boolean updateSkillBlock(SkillBlock s) {
+        try {
+            String sql = "UPDATE " + SKILLBLOCK_TABLE_NAME + " SET " + SKILLBLOCK_DB_NAME + "=?, "
+            + SKILLBLOCK_DB_DESC + "=?";
+
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1, s.getBlockName());
+            statement.setString(2, s.getBlockDesc());
+
+            int result = statement.executeUpdate();
+            if (result > 0) {
+                System.out.println("The skillblock was updated successfully!");
+                return true;
+            } else {
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
+
+    public boolean deleteSkillBlock(String blockname){
+        String sql = "DELETE FROM " + SKILLBLOCK_TABLE_NAME + " WHERE `" + SKILLBLOCK_DB_NAME + "`='" + blockname + "'";
+        try {
+            int result = statement.executeUpdate(sql);
+            if (result > 0) {
+                System.out.println("The skillblock was updated successfully!");
+                return true;
+            } else {
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
 }
