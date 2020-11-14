@@ -1,5 +1,6 @@
 package com.bitsplease.skillslist_server;
 
+import com.bitsplease.skillslist_server.data.SkillBlock;
 import com.bitsplease.skillslist_server.data.User;
 import com.bitsplease.skillslist_server.database.DatabaseHandler;
 
@@ -12,6 +13,7 @@ public class SkillslistServerApplication {
 	public static void main(String[] args) {
 		db.resetAll();
 		db.insertUser(new User("hbollon", "coucou", "Hugo", "Bollon"));
+		db.insertSkillBlock(new SkillBlock("C++", "Your skill in this language"));
 		SpringApplication.run(SkillslistServerApplication.class, args);
 	}
 }

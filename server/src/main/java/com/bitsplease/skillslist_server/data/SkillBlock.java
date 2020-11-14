@@ -10,6 +10,11 @@ public class SkillBlock {
     private String blockDesc;
     private ArrayList<Pair<Skill, Boolean>> skills;
 
+    public SkillBlock(String blockName, String blockDesc) {
+        this.blockName = blockName;
+        this.blockDesc = blockDesc;
+        this.skills = new ArrayList<Pair<Skill, Boolean>>();
+    }
 
     public SkillBlock(String blockName, String blockDesc, ArrayList<Pair<Skill,Boolean>> skills) {
         this.blockName = blockName;
