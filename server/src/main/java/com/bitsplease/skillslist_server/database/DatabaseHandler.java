@@ -1,10 +1,12 @@
 package com.bitsplease.skillslist_server.database;
 
+import com.bitsplease.skillslist_server.data.Skill;
 import com.bitsplease.skillslist_server.data.SkillBlock;
 import com.bitsplease.skillslist_server.data.User;
 import com.bitsplease.skillslist_server.utils.HashUtils;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 /**
  * DatabaseHandler
@@ -243,5 +245,36 @@ public class DatabaseHandler {
         }
     }
 
+    public SkillBlock getSkillBlock(String name) {
+        String sql = "SELECT * FROM " + SKILLBLOCK_TABLE_NAME + " WHERE `" + SKILLBLOCK_DB_NAME + "`='" + name + "'";
+        try {
+            ResultSet rs = statement.executeQuery(sql);
+            if(rs.next()){
+                return new SkillBlock(rs.getInt(1), rs.getString(2), rs.getString(3));
+            }
+            System.out.println("Requested skillblock doesn't exist!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return null;
+    }
+
+    public SkillBlock[] getAllSkillBlock() {
+        String sql = "SELECT * FROM " + SKILLBLOCK_TABLE_NAME;
+        ArrayList<SkillBlock> skillblocks = new ArrayList<SkillBlock>();
+        try {
+            ResultSet rs = statement.executeQuery(sql);
+            while(rs.next()){
+                skillblocks.add(new SkillBlock(rs.getInt(1), rs.getString(2), rs.getString(3)));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        SkillBlock[] output = skillblocks.toArray(new SkillBlock[skillblocks.size()]);
+        return output;
+    }
 
 }

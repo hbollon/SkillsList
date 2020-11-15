@@ -6,9 +6,17 @@ import java.util.Objects;
 import com.bitsplease.skillslist_server.utils.Pair;
 
 public class SkillBlock {
+    private int dbId;
     private String blockName;
     private String blockDesc;
     private ArrayList<Pair<Skill, Boolean>> skills;
+
+    public SkillBlock(int dbId, String blockName, String blockDesc) {
+        this.dbId = dbId;
+        this.blockName = blockName;
+        this.blockDesc = blockDesc;
+        this.skills = new ArrayList<Pair<Skill, Boolean>>();
+    }
 
     public SkillBlock(String blockName, String blockDesc) {
         this.blockName = blockName;
@@ -20,6 +28,14 @@ public class SkillBlock {
         this.blockName = blockName;
         this.blockDesc = blockDesc;
         this.skills = skills;
+    }
+
+    public int getDbId() {
+        return this.dbId;
+    }
+
+    public void setBlockName(int dbId) {
+        this.dbId = dbId;
     }
 
     public String getBlockName() {
