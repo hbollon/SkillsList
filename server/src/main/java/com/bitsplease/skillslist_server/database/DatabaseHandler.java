@@ -210,7 +210,7 @@ public class DatabaseHandler {
     public boolean updateSkillBlock(SkillBlock s) {
         try {
             String sql = "UPDATE " + SKILLBLOCK_TABLE_NAME + " SET " + SKILLBLOCK_DB_NAME + "=?, "
-            + SKILLBLOCK_DB_DESC + "=?";
+            + SKILLBLOCK_DB_DESC + "=? WHERE `" + SKILLBLOCK_DB_NAME + "`='" + s.getBlockName() + "'";
 
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setString(1, s.getBlockName());
