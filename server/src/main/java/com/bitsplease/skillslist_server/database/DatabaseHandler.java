@@ -33,8 +33,19 @@ public class DatabaseHandler {
     private final String SKILLBLOCK_DB_SQL = "CREATE TABLE IF NOT EXISTS skillblock " + "(id INT NOT NULL AUTO_INCREMENT, "
     + " name VARCHAR(255), " + " description VARCHAR(255), " + " PRIMARY KEY ( id ))";
 
-    private final String[] TABLES = {USER_TABLE_NAME, SKILLBLOCK_TABLE_NAME};
-    private final String[] TABLES_SQL = {USER_DB_SQL, SKILLBLOCK_DB_SQL};
+    private final String SKILL_TABLE_NAME = "skill";
+    private final String SKILL_DB_NAME = "name";
+    private final String SKILL_DB_DESC = "description";
+    private final String SKILL_SKILLBLOCK_ID = "skillblock_id";
+    private final String SKILL_DB_SQL = 
+        "CREATE TABLE IF NOT EXISTS " + SKILL_TABLE_NAME + " ( id INT NOT NULL AUTO_INCREMENT, " + 
+        "name VARCHAR(255), " + 
+        "description VARCHAR(255), " + 
+        "skillblock_id INT, " + 
+        "PRIMARY KEY ( id ), FOREIGN KEY(" + SKILL_SKILLBLOCK_ID + ") REFERENCES " + SKILLBLOCK_TABLE_NAME + "(id))";
+
+    private final String[] TABLES = {USER_TABLE_NAME, SKILLBLOCK_TABLE_NAME, SKILL_TABLE_NAME};
+    private final String[] TABLES_SQL = {USER_DB_SQL, SKILLBLOCK_DB_SQL, SKILL_DB_SQL};
 
     private Connection conn;
     private Statement statement;
@@ -60,12 +71,14 @@ public class DatabaseHandler {
      * Clear all tables of the db
      */
     private void clearAllTables(){
-        for (String table : TABLES) {
-            try {
+        try {
+            statement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+            for (String table : TABLES) {
                 statement.executeUpdate("TRUNCATE " + table);
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
+            statement.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -145,9 +158,10 @@ public class DatabaseHandler {
         try {
             int result = statement.executeUpdate(sql);
             if (result > 0) {
-                System.out.println("The user was updated successfully!");
+                System.out.println("The user was deleted successfully!");
                 return true;
             } else {
+                System.out.println("User delete failed!");
                 return false;
             }
         } catch (SQLException e) {
@@ -221,6 +235,7 @@ public class DatabaseHandler {
                 System.out.println("The skillblock was updated successfully!");
                 return true;
             } else {
+                System.out.println("SkillBlock update failed!");
                 return false;
             }
         } catch (SQLException e) {
@@ -234,9 +249,10 @@ public class DatabaseHandler {
         try {
             int result = statement.executeUpdate(sql);
             if (result > 0) {
-                System.out.println("The skillblock was updated successfully!");
+                System.out.println("The skillblock was deleted successfully!");
                 return true;
             } else {
+                System.out.println("SkillBlock delete failed!");
                 return false;
             }
         } catch (SQLException e) {
@@ -274,6 +290,105 @@ public class DatabaseHandler {
         }
 
         SkillBlock[] output = skillblocks.toArray(new SkillBlock[skillblocks.size()]);
+        return output;
+    }
+
+    /**
+     * Skill Interactions
+     */
+
+    public boolean insertSkill(String skillblockName, Skill skill) {
+        System.out.println("Trying to insert new skill...");
+        try {
+            SkillBlock associatedSkillBlock = getSkillBlock(skillblockName);
+            if(associatedSkillBlock == null){
+                System.out.println("Error: Associated SkillBlock not found !");
+                return false;    
+            }
+
+            String check_existing_request = "SELECT * FROM skill WHERE `" + SKILL_DB_NAME + "`='" + skill.getSkillName() + "'";
+            ResultSet rs = statement.executeQuery(check_existing_request);
+            if(rs.next()) {
+                System.out.println("Error: Skill already exists in this SkillBlock !");
+                return false;
+            }
+
+            String sql = "INSERT INTO " + SKILL_TABLE_NAME + "(`" + SKILLBLOCK_DB_NAME + "`, `" + SKILLBLOCK_DB_DESC + "`, `" + SKILL_SKILLBLOCK_ID + "`) VALUES (?, ?, ?)";
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1, skill.getSkillName());
+            statement.setString(2, skill.getSkillDesc());
+            statement.setInt(3, associatedSkillBlock.getDbId());
+
+            int result = statement.executeUpdate();
+            if (result > 0) {
+                System.out.println("A new skill was inserted successfully!");
+                return true;
+            } else {
+                System.out.println("Skill insert failed!");
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean updateSkill(Skill skill) {
+        try {
+            String sql = "UPDATE " + SKILL_TABLE_NAME + " SET " + 
+            SKILL_DB_NAME + "=?, " + 
+            SKILL_DB_DESC + "=? WHERE `" + SKILL_DB_NAME + "`='" + skill.getSkillName() + "'";
+
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1, skill.getSkillName());
+            statement.setString(2, skill.getSkillDesc());
+
+            int result = statement.executeUpdate();
+            if (result > 0) {
+                System.out.println("The skill was updated successfully!");
+                return true;
+            } else {
+                System.out.println("Skill update failed!");
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteSkill(String skillname){
+        String sql = "DELETE FROM " + SKILL_TABLE_NAME + " WHERE `" + SKILL_DB_NAME + "`='" + skillname + "'";
+        try {
+            int result = statement.executeUpdate(sql);
+            if (result > 0) {
+                System.out.println("The skill was deleted successfully!");
+                return true;
+            } else {
+                System.out.println("Skill delete failed!");
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public Skill[] getAllSkillFromSkillBlock(String skillblockname) {
+        SkillBlock skillBlock = getSkillBlock(skillblockname);
+        String sql = "SELECT * FROM " + SKILL_TABLE_NAME + " WHERE " + SKILL_SKILLBLOCK_ID + "=" + skillBlock.getDbId();
+        ArrayList<Skill> skills = new ArrayList<Skill>();
+        try {
+            ResultSet rs = statement.executeQuery(sql);
+            while(rs.next()){
+                skills.add(new Skill(rs.getInt(1), rs.getInt(4), rs.getString(2), rs.getString(3)));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        Skill[] output = skills.toArray(new Skill[skills.size()]);
         return output;
     }
 
