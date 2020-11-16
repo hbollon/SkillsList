@@ -10,9 +10,18 @@ import 'package:sprintf/sprintf.dart';
 
 Future<bool> login(String username, String password) async {
   print("Logging in...");
-  final url = sprintf("http://%s:8080/login?login=%s&password=%s",
-      [MyApp.ip, username, password]);
-  final response = await http.get(url);
+
+  Map regUser = {
+    'username': username,
+    'password': password,
+  };
+
+  final url = sprintf(
+      "http://%s:8080/login",
+      [MyApp.ip]);
+  final response = await http.post(url,
+    headers: {"Content-Type": "application/json"}, 
+    body: json.encode(regUser));
   print(response.body);
 
   var jsonResponse = json.decode(response.body);

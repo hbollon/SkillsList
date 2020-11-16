@@ -11,6 +11,8 @@ public class User {
     private String lastName;
     private Role userRole;
     private ArrayList<SkillBlock> skillsBlocks;
+
+    public User() {}
     
     public User(int dbId, String username, String password, String firstName, String lastName) {
         this.dbId = dbId;
@@ -18,6 +20,11 @@ public class User {
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
     }
 
     public User(String username, String password, String firstName, String lastName) {

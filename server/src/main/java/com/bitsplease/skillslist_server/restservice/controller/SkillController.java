@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class SkillController {
     private final AtomicLong counter = new AtomicLong();
 
-    @GetMapping("/getAllSkill")
+    @GetMapping("/getSkills")
     public Response getAllFromSkillBlock(
         @RequestParam(value = "blockName") String blockName
     )
