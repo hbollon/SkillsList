@@ -9,10 +9,20 @@ import 'package:sprintf/sprintf.dart';
 Future<bool> register(
     String username, String password, String firstName, String lastName) async {
   print("Sending registering form...");
+
+  Map regUser = {
+    'username': username,
+    'password': password,
+    'firstName': firstName,
+    'lastName': lastName,
+  };
+
   final url = sprintf(
-      "http://%s:8080/register?login=%s&password=%s&firstName=%s&lastName=%s",
-      [MyApp.ip, username, password, firstName, lastName]);
-  final response = await http.get(url);
+      "http://%s:8080/register",
+      [MyApp.ip]);
+  final response = await http.post(url,
+    headers: {"Content-Type": "application/json"}, 
+    body: json.encode(regUser));
   print(response.body);
 
   var jsonResponse = json.decode(response.body);
