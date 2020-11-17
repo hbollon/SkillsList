@@ -14,6 +14,7 @@ public class SkillslistServerApplication {
 	public static void main(String[] args) {
 		db.resetAll();
 		db.insertUser(new User("hbollon", "coucou", "Hugo", "Bollon"));
+		User currentUser = db.connectUser("hbollon", "coucou");
 
 		db.insertSkillBlock(new SkillBlock("C++", "Your skill in this language"));
 		db.insertSkillBlock(new SkillBlock("Go", "Your skill in this language"));
@@ -34,6 +35,10 @@ public class SkillslistServerApplication {
 		for (Skill skill : testSkills) {
 			System.out.println(skill.toString());
 		}
+
+		db.subscribeSkillBlock(currentUser, db.getSkillBlock("Go"));
+		db.subscribeSkillBlock(currentUser, db.getSkillBlock("C"));
+		db.unsubscribeSkillBlock(currentUser, db.getSkillBlock("C"));
 
 		SpringApplication.run(SkillslistServerApplication.class, args);
 	}

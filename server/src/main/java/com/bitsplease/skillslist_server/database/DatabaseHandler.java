@@ -44,8 +44,32 @@ public class DatabaseHandler {
         "skillblock_id INT, " + 
         "PRIMARY KEY ( id ), FOREIGN KEY(" + SKILL_SKILLBLOCK_ID + ") REFERENCES " + SKILLBLOCK_TABLE_NAME + "(id))";
 
-    private final String[] TABLES = {USER_TABLE_NAME, SKILLBLOCK_TABLE_NAME, SKILL_TABLE_NAME};
-    private final String[] TABLES_SQL = {USER_DB_SQL, SKILLBLOCK_DB_SQL, SKILL_DB_SQL};
+    private final String USER_SKILLBLOCKS_TABLE_NAME = "user_skillblock";
+    private final String USER_SKILLBLOCKS_USER_ID = "user_id";
+    private final String USER_SKILLBLOCKS_SKILLBLOCK_ID = "skillblock_id";
+    private final String USER_SKILLBLOCKS_DB_SQL = 
+        "CREATE TABLE IF NOT EXISTS " + USER_SKILLBLOCKS_TABLE_NAME + " ( id INT NOT NULL AUTO_INCREMENT, " + 
+        "user_id INT, " + 
+        "skillblock_id INT, " + 
+        "PRIMARY KEY ( id ), " + 
+        "FOREIGN KEY(" + USER_SKILLBLOCKS_USER_ID + ") REFERENCES " + USER_TABLE_NAME + "(id), " + 
+        "FOREIGN KEY(" + USER_SKILLBLOCKS_SKILLBLOCK_ID + ") REFERENCES " + SKILLBLOCK_TABLE_NAME + "(id))";
+
+    private final String USER_SKILLS_TABLE_NAME = "user_skill";
+    private final String USER_SKILLS_USER_ID = "user_id";
+    private final String USER_SKILLS_SKILL_ID = "skill_id";
+    private final String USER_SKILLS_SKILL_STATUS = "status";
+    private final String USER_SKILLS_DB_SQL = 
+        "CREATE TABLE IF NOT EXISTS " + USER_SKILLS_TABLE_NAME + " ( id INT NOT NULL AUTO_INCREMENT, " + 
+        "user_id INT, " + 
+        "skill_id INT, " + 
+        "status INT, " + 
+        "PRIMARY KEY ( id ), " + 
+        "FOREIGN KEY(" + USER_SKILLS_USER_ID + ") REFERENCES " + USER_TABLE_NAME + "(id), " + 
+        "FOREIGN KEY(" + USER_SKILLS_SKILL_ID + ") REFERENCES " + SKILL_TABLE_NAME + "(id))";
+
+    private final String[] TABLES = {USER_TABLE_NAME, SKILLBLOCK_TABLE_NAME, SKILL_TABLE_NAME, USER_SKILLBLOCKS_TABLE_NAME, USER_SKILLS_TABLE_NAME};
+    private final String[] TABLES_SQL = {USER_DB_SQL, SKILLBLOCK_DB_SQL, SKILL_DB_SQL, USER_SKILLBLOCKS_DB_SQL, USER_SKILLS_DB_SQL};
 
     private Connection conn;
     private Statement statement;
@@ -186,6 +210,64 @@ public class DatabaseHandler {
         }
         return null;
     }
+
+    public boolean subscribeSkillBlock(User u, SkillBlock s) {
+        System.out.println("Trying to subscribe to new skillblock...");
+        try {
+            String check_existing_user = "SELECT * FROM user WHERE `" + USER_DB_USERNAME + "`='" + u.getUsername() + "'";
+            ResultSet rs = statement.executeQuery(check_existing_user);
+            if(!rs.next()) {
+                System.out.println("Error: User don't exist !");
+                return false;
+            }
+
+            String check_existing_skillblock = "SELECT * FROM skillblock WHERE `" + SKILLBLOCK_DB_NAME + "`='" + s.getBlockName() + "'";
+            rs = statement.executeQuery(check_existing_skillblock);
+            if(!rs.next()) {
+                System.out.println("Error: Skillblock don't exist !");
+                return false;
+            }
+
+            String sql = "INSERT INTO " + USER_SKILLBLOCKS_TABLE_NAME + "(`" + USER_SKILLBLOCKS_USER_ID + "`, `" + USER_SKILLBLOCKS_SKILLBLOCK_ID + "`) VALUES (?, ?)";
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setInt(1, u.getDbId());
+            statement.setInt(2, s.getDbId());
+
+            int result = statement.executeUpdate();
+            if (result > 0) {
+                System.out.println("A new skillblock was linked to current user successfully!");
+                return true;
+            } else {
+                System.out.println("Skillblock subscribe insert failed!");
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean unsubscribeSkillBlock(User u, SkillBlock s) {
+        System.out.println("Trying to unsubscribe to skillblock...");
+        try {
+            String sql = "DELETE FROM " + USER_SKILLBLOCKS_TABLE_NAME + " WHERE `" + 
+            USER_SKILLBLOCKS_USER_ID + "`='" + u.getDbId() + "' AND `" +
+            USER_SKILLBLOCKS_SKILLBLOCK_ID + "`='" + s.getDbId() + "'";
+
+            int result = statement.executeUpdate(sql);
+            if (result > 0) {
+                System.out.println("Unsubscribed skillblock to current user successfully!");
+                return true;
+            } else {
+                System.out.println("Skillblock link insert failed!");
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
     /**
      * SkillBlock Interactions

@@ -2,7 +2,9 @@ package com.bitsplease.skillslist_server.restservice.controller;
 
 import com.bitsplease.skillslist_server.SkillslistServerApplication;
 import com.bitsplease.skillslist_server.data.SkillBlock;
+import com.bitsplease.skillslist_server.data.User;
 import com.bitsplease.skillslist_server.restservice.Response;
+import com.bitsplease.skillslist_server.restservice.SuccessState;
 import com.google.gson.Gson;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,7 +35,6 @@ public class SkillBlockController {
         @RequestParam(value = "name") String name
     )
     {
-        System.out.println("'"+name+"'");
         SkillBlock skillblock = SkillslistServerApplication.db.getSkillBlock(name);
         if(skillblock != null) {
             Gson gson = new Gson();
@@ -41,6 +42,34 @@ public class SkillBlockController {
             return new Response(counter.incrementAndGet(), contentJson);
         } else {
             return new Response(counter.incrementAndGet(), "");
+        }
+    }
+
+    @GetMapping("/skillBlockSubscribe")
+    public SuccessState subscribe(
+        @RequestParam(value = "currentUser") User user,
+        @RequestParam(value = "skillblock") SkillBlock sb
+    )
+    {
+        boolean res = SkillslistServerApplication.db.subscribeSkillBlock(user, sb);
+        if(res) {
+            return new SuccessState(counter.incrementAndGet(), true);
+        } else {
+            return new SuccessState(counter.incrementAndGet(), false);
+        }
+    }
+
+    @GetMapping("/skillBlockUnsubscribe")
+    public SuccessState unsubscribe(
+        @RequestParam(value = "currentUser") User user,
+        @RequestParam(value = "skillblock") SkillBlock sb
+    )
+    {
+        boolean res = SkillslistServerApplication.db.unsubscribeSkillBlock(user, sb);
+        if(res) {
+            return new SuccessState(counter.incrementAndGet(), true);
+        } else {
+            return new SuccessState(counter.incrementAndGet(), false);
         }
     }
 }
