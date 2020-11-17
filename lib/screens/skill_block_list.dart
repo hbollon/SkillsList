@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:skillslist/main.dart';
 import 'package:skillslist/models/SkillBlock.dart';
+import 'package:skillslist/widgets/menu_drawer.dart';
 import 'package:skillslist/widgets/skill_block_row.dart';
 
 import 'package:sprintf/sprintf.dart';
@@ -47,7 +48,8 @@ class _SkillBlockListState extends State<SkillBlockList> {
 
   @override
   Widget build(BuildContext context) {
-    TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
+    TextStyle style = TextStyle(
+        fontFamily: 'Montserrat', color: Colors.white, fontSize: 20.0);
     var fetch = fetchUserSkillBlocks();
     return MaterialApp(
       title: 'SkillList',
@@ -56,6 +58,7 @@ class _SkillBlockListState extends State<SkillBlockList> {
           appBar: AppBar(
             title: Text('Your Skill Blocks'),
           ),
+          drawer: MenuDrawer(),
           body: FutureBuilder(
               future: fetch,
               builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
