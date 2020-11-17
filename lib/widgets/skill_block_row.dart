@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:skillslist/models/SkillBlock.dart';
 import 'package:skillslist/widgets/skill_list.dart';
 
 import '../utils.dart';
@@ -7,9 +8,15 @@ class SkillBlockRow extends StatelessWidget {
   SkillBlockRow(this.title, this.imgPath, this.value, {Key key})
       : super(key: key);
 
-  final String imgPath;
-  final String title;
-  final double value;
+  SkillBlockRow.from(SkillBlock sb, {Key key}) : super(key: key) {
+    this.imgPath = null;
+    this.title = sb.name;
+    this.value = sb.value;
+  }
+
+  String imgPath;
+  String title;
+  double value;
 
   final TextStyle style = TextStyle(
       fontFamily: 'Montserrat',
@@ -19,15 +26,18 @@ class SkillBlockRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final blockThumbnail = new Container(
-      margin: new EdgeInsets.symmetric(horizontal: 12.0),
-      alignment: FractionalOffset.centerLeft,
-      child: new Image(
-        image: new AssetImage(imgPath),
-        height: 64.0,
-        width: 64.0,
-      ),
-    );
+    Container blockThumbnail;
+    if (this.imgPath != null) {
+      blockThumbnail = new Container(
+        margin: new EdgeInsets.symmetric(horizontal: 12.0),
+        alignment: FractionalOffset.centerLeft,
+        child: new Image(
+          image: new AssetImage(imgPath),
+          height: 64.0,
+          width: 64.0,
+        ),
+      );
+    }
     final blockProgress = new Container(
         margin: new EdgeInsets.symmetric(horizontal: 16.0),
         alignment: FractionalOffset.centerRight,
@@ -63,29 +73,55 @@ class SkillBlockRow extends StatelessWidget {
         ],
       ),
     );
-    return new GestureDetector(
-      child: Container(
-          height: 120.0,
-          margin: const EdgeInsets.symmetric(
-            vertical: 16.0,
-            horizontal: 24.0,
-          ),
-          child: new Stack(
-            children: <Widget>[
-              blockCard,
-              blockThumbnail,
-              blockTitle,
-              blockProgress,
-            ],
-          )),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  SkillListPage(this.value, this.title, this.imgPath)),
-        );
-      },
-    );
+    if (this.imgPath != null) {
+      return new GestureDetector(
+        child: Container(
+            height: 120.0,
+            margin: const EdgeInsets.symmetric(
+              vertical: 16.0,
+              horizontal: 24.0,
+            ),
+            child: new Stack(
+              children: <Widget>[
+                blockCard,
+                blockThumbnail,
+                blockTitle,
+                blockProgress,
+              ],
+            )),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    SkillListPage(this.value, this.title, this.imgPath)),
+          );
+        },
+      );
+    } else {
+      return new GestureDetector(
+        child: Container(
+            height: 120.0,
+            margin: const EdgeInsets.symmetric(
+              vertical: 16.0,
+              horizontal: 24.0,
+            ),
+            child: new Stack(
+              children: <Widget>[
+                blockCard,
+                blockTitle,
+                blockProgress,
+              ],
+            )),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    SkillListPage(this.value, this.title, this.imgPath)),
+          );
+        },
+      );
+    }
   }
 }

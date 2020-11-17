@@ -8,16 +8,16 @@ import 'package:skillslist/screens/login.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  static String ip = "192.168.1.72";
+  static String ip = "192.168.0.13";
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Welcome to Flutter',
+      title: 'SkillList',
       theme: ThemeData(primarySwatch: Colors.deepPurple),
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Welcome to Flutter'),
+          title: Text('SkillList'),
         ),
         body: Center(
           child: LoginPage(),

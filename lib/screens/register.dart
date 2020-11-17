@@ -4,6 +4,7 @@ import 'package:skillslist/models/User.dart';
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:skillslist/screens/login.dart';
 import 'package:sprintf/sprintf.dart';
 
 Future<bool> register(
@@ -17,12 +18,10 @@ Future<bool> register(
     'lastName': lastName,
   };
 
-  final url = sprintf(
-      "http://%s:8080/register",
-      [MyApp.ip]);
+  final url = sprintf("http://%s:8080/register", [MyApp.ip]);
   final response = await http.post(url,
-    headers: {"Content-Type": "application/json"}, 
-    body: json.encode(regUser));
+      headers: {"Content-Type": "application/json"},
+      body: json.encode(regUser));
   print(response.body);
 
   var jsonResponse = json.decode(response.body);
@@ -127,6 +126,10 @@ class _RegisterPageState extends State<RegisterPage> {
                         Scaffold.of(context).showSnackBar(SnackBar(
                           content: Text("Successfully registered !"),
                         ));
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                        );
                       } else {
                         Scaffold.of(context).showSnackBar(SnackBar(
                           content:

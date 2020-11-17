@@ -16,12 +16,10 @@ Future<bool> login(String username, String password) async {
     'password': password,
   };
 
-  final url = sprintf(
-      "http://%s:8080/login",
-      [MyApp.ip]);
+  final url = sprintf("http://%s:8080/login", [MyApp.ip]);
   final response = await http.post(url,
-    headers: {"Content-Type": "application/json"}, 
-    body: json.encode(regUser));
+      headers: {"Content-Type": "application/json"},
+      body: json.encode(regUser));
   print(response.body);
 
   var jsonResponse = json.decode(response.body);
