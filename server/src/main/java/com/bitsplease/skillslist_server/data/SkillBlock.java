@@ -11,6 +11,13 @@ public class SkillBlock {
     private String blockDesc;
     private ArrayList<Pair<Skill, Boolean>> skills;
 
+    public SkillBlock() {}
+
+    public SkillBlock(int dbId, String blockName) {
+        this.dbId = dbId;
+        this.blockName = blockName;
+    }
+
     public SkillBlock(int dbId, String blockName, String blockDesc) {
         this.dbId = dbId;
         this.blockName = blockName;
