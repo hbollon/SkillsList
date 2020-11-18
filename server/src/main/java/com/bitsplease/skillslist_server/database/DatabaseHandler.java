@@ -240,6 +240,13 @@ public class DatabaseHandler {
                 return false;
             }
 
+            String check_existing_request = "SELECT * FROM " + USER_SKILLBLOCKS_TABLE_NAME + " WHERE `" + USER_SKILLBLOCKS_USER_ID + "`='" + userId + "' AND `" + USER_SKILLBLOCKS_SKILLBLOCK_ID + "`='" + skillblock.getDbId() + "'";
+            ResultSet rs = statement.executeQuery(check_existing_request);
+            if(rs.next()) {
+                System.out.println("Error: User already subscribed to this skillblock !");
+                return false;
+            }
+
             String sql = "INSERT INTO " + USER_SKILLBLOCKS_TABLE_NAME + "(`" + USER_SKILLBLOCKS_USER_ID + "`, `" + USER_SKILLBLOCKS_SKILLBLOCK_ID + "`) VALUES (?, ?)";
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setInt(1, userId);
@@ -283,7 +290,7 @@ public class DatabaseHandler {
                 System.out.println("Unsubscribed skillblock to current user successfully!");
                 return true;
             } else {
-                System.out.println("Skillblock link insert failed!");
+                System.out.println("Skillblock link delete failed!");
                 return false;
             }
         } catch (SQLException e) {
