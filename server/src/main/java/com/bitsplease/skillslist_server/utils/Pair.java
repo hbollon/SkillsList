@@ -15,10 +15,15 @@ public class Pair<F, S> implements Serializable {
     public final F first;
     public final S second;
 
-    public Pair(F s, S o)
+    public Pair() {
+        this.first = null;
+        this.second = null;
+    }
+
+    public Pair(F first, S second)
     {
-        this.first = s;
-        this.second = o;
+        this.first = first;
+        this.second = second;
     }
 
     @Override

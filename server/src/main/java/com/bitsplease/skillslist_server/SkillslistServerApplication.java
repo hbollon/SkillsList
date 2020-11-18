@@ -36,9 +36,9 @@ public class SkillslistServerApplication {
 			System.out.println(skill.toString());
 		}
 
-		db.subscribeSkillBlock(currentUser, db.getSkillBlock("Go"));
-		db.subscribeSkillBlock(currentUser, db.getSkillBlock("C"));
-		db.unsubscribeSkillBlock(currentUser, db.getSkillBlock("C"));
+		db.subscribeSkillBlock(currentUser.getUsername(), db.getSkillBlock("Go").getBlockName());
+		db.subscribeSkillBlock(currentUser.getUsername(), db.getSkillBlock("C").getBlockName());
+		db.unsubscribeSkillBlock(currentUser.getUsername(), db.getSkillBlock("C").getBlockName());
 
 		SpringApplication.run(SkillslistServerApplication.class, args);
 	}

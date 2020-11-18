@@ -5,9 +5,13 @@ import com.bitsplease.skillslist_server.data.SkillBlock;
 import com.bitsplease.skillslist_server.data.User;
 import com.bitsplease.skillslist_server.restservice.Response;
 import com.bitsplease.skillslist_server.restservice.SuccessState;
+import com.bitsplease.skillslist_server.restservice.model.StringPair;
+import com.bitsplease.skillslist_server.utils.Pair;
 import com.google.gson.Gson;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -45,13 +49,12 @@ public class SkillBlockController {
         }
     }
 
-    @GetMapping("/skillBlockSubscribe")
+    @PostMapping(path = "/subscribe", consumes = "application/json", produces = "application/json")
     public SuccessState subscribe(
-        @RequestParam(value = "currentUser") User user,
-        @RequestParam(value = "skillblock") SkillBlock sb
+        @RequestBody StringPair content 
     )
     {
-        boolean res = SkillslistServerApplication.db.subscribeSkillBlock(user, sb);
+        boolean res = SkillslistServerApplication.db.subscribeSkillBlock(content.first, content.second);
         if(res) {
             return new SuccessState(counter.incrementAndGet(), true);
         } else {
@@ -59,13 +62,12 @@ public class SkillBlockController {
         }
     }
 
-    @GetMapping("/skillBlockUnsubscribe")
+    @PostMapping(path = "/unsubscribe", consumes = "application/json", produces = "application/json")
     public SuccessState unsubscribe(
-        @RequestParam(value = "currentUser") User user,
-        @RequestParam(value = "skillblock") SkillBlock sb
+        @RequestBody StringPair content
     )
     {
-        boolean res = SkillslistServerApplication.db.unsubscribeSkillBlock(user, sb);
+        boolean res = SkillslistServerApplication.db.unsubscribeSkillBlock(content.first, content.second);
         if(res) {
             return new SuccessState(counter.incrementAndGet(), true);
         } else {

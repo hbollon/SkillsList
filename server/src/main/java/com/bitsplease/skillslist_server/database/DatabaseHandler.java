@@ -194,6 +194,20 @@ public class DatabaseHandler {
         }
     }
 
+    public int getUserId(String login) {
+        String sql = "SELECT * FROM user WHERE `" + USER_DB_USERNAME + "`='" + login + "'";
+        try {
+            ResultSet rs = statement.executeQuery(sql);
+            if(rs.next()){
+                return rs.getInt(1);
+            }
+            System.out.println("User not find!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
     public User connectUser(String login, String password) {
         String sql = "SELECT * FROM user WHERE `" + USER_DB_USERNAME + "`='" + login + "'";
         try {
@@ -211,27 +225,25 @@ public class DatabaseHandler {
         return null;
     }
 
-    public boolean subscribeSkillBlock(User u, SkillBlock s) {
+    public boolean subscribeSkillBlock(String u, String s) {
         System.out.println("Trying to subscribe to new skillblock...");
         try {
-            String check_existing_user = "SELECT * FROM user WHERE `" + USER_DB_USERNAME + "`='" + u.getUsername() + "'";
-            ResultSet rs = statement.executeQuery(check_existing_user);
-            if(!rs.next()) {
+            int userId = getUserId(u);
+            if(userId == -1) {
                 System.out.println("Error: User don't exist !");
                 return false;
             }
 
-            String check_existing_skillblock = "SELECT * FROM skillblock WHERE `" + SKILLBLOCK_DB_NAME + "`='" + s.getBlockName() + "'";
-            rs = statement.executeQuery(check_existing_skillblock);
-            if(!rs.next()) {
+            SkillBlock skillblock = getSkillBlock(s);
+            if(skillblock == null) {
                 System.out.println("Error: Skillblock don't exist !");
                 return false;
             }
 
             String sql = "INSERT INTO " + USER_SKILLBLOCKS_TABLE_NAME + "(`" + USER_SKILLBLOCKS_USER_ID + "`, `" + USER_SKILLBLOCKS_SKILLBLOCK_ID + "`) VALUES (?, ?)";
             PreparedStatement statement = conn.prepareStatement(sql);
-            statement.setInt(1, u.getDbId());
-            statement.setInt(2, s.getDbId());
+            statement.setInt(1, userId);
+            statement.setInt(2, skillblock.getDbId());
 
             int result = statement.executeUpdate();
             if (result > 0) {
@@ -247,12 +259,24 @@ public class DatabaseHandler {
         }
     }
 
-    public boolean unsubscribeSkillBlock(User u, SkillBlock s) {
+    public boolean unsubscribeSkillBlock(String u, String s) {
         System.out.println("Trying to unsubscribe to skillblock...");
         try {
+            int userId = getUserId(u);
+            if(userId == -1) {
+                System.out.println("Error: User don't exist !");
+                return false;
+            }
+
+            SkillBlock skillblock = getSkillBlock(s);
+            if(skillblock == null) {
+                System.out.println("Error: Skillblock don't exist !");
+                return false;
+            }
+
             String sql = "DELETE FROM " + USER_SKILLBLOCKS_TABLE_NAME + " WHERE `" + 
-            USER_SKILLBLOCKS_USER_ID + "`='" + u.getDbId() + "' AND `" +
-            USER_SKILLBLOCKS_SKILLBLOCK_ID + "`='" + s.getDbId() + "'";
+            USER_SKILLBLOCKS_USER_ID + "`='" + userId + "' AND `" +
+            USER_SKILLBLOCKS_SKILLBLOCK_ID + "`='" + skillblock.getDbId() + "'";
 
             int result = statement.executeUpdate(sql);
             if (result > 0) {

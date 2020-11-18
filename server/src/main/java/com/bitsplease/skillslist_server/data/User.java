@@ -10,9 +10,14 @@ public class User {
     private String firstName;
     private String lastName;
     private Role userRole;
-    private ArrayList<SkillBlock> skillsBlocks;
+    private SkillBlock[] skillsBlocks;
 
     public User() {}
+
+    public User(int dbId, String username) {
+        this.dbId = dbId;
+        this.username = username;
+    }
     
     public User(int dbId, String username, String password, String firstName, String lastName) {
         this.dbId = dbId;
@@ -34,7 +39,7 @@ public class User {
         this.lastName = lastName;
     }
 
-    public User(int dbId, String username, String password, String firstName, String lastName, Role userRole, ArrayList<SkillBlock> skillsBlocks) {
+    public User(int dbId, String username, String password, String firstName, String lastName, Role userRole, SkillBlock[] skillsBlocks) {
         this.dbId = dbId;
         this.username = username;
         this.password = password;
@@ -93,11 +98,11 @@ public class User {
         this.userRole = userRole;
     }
 
-    public ArrayList<SkillBlock> getSkillsBlocks() {
+    public SkillBlock[] getSkillsBlocks() {
         return this.skillsBlocks;
     }
 
-    public void setSkillsBlocks(ArrayList<SkillBlock> skillsBlocks) {
+    public void setSkillsBlocks(SkillBlock[] skillsBlocks) {
         this.skillsBlocks = skillsBlocks;
     }
 
