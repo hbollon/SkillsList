@@ -1,5 +1,6 @@
 package com.bitsplease.skillslist_server;
 
+import com.bitsplease.skillslist_server.data.Role;
 import com.bitsplease.skillslist_server.data.Skill;
 import com.bitsplease.skillslist_server.data.SkillBlock;
 import com.bitsplease.skillslist_server.data.User;
@@ -13,7 +14,20 @@ public class SkillslistServerApplication {
 	public static DatabaseHandler db = new DatabaseHandler();
 	public static void main(String[] args) {
 		db.resetAll();
-		db.insertUser(new User("hbollon", "coucou", "Hugo", "Bollon"));
+
+		Role teacherRole = new Role("Teacher", true, true);
+		Role studentRole = new Role("Student", true, true);
+		db.insertRole(teacherRole);
+		db.insertRole(studentRole);
+		studentRole.setCanAddSkill(false);
+		studentRole.setCanValidate(false);
+		db.updateRole(studentRole);
+
+		// teacherRole = db.getRole("Teacher");
+		// studentRole = db.getRole("Student");
+
+		db.insertUser(new User("hbollon", "coucou", "Hugo", "Bollon", teacherRole));
+		db.updateUser(new User("hbollon", "coucou", "Hugo", "Bollon", studentRole));
 		User currentUser = db.connectUser("hbollon", "coucou");
 
 		db.insertSkillBlock(new SkillBlock("C++", "Your skill in this language"));

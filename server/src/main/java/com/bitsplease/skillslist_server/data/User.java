@@ -1,6 +1,5 @@
 package com.bitsplease.skillslist_server.data;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
 public class User {
@@ -19,12 +18,12 @@ public class User {
         this.username = username;
     }
     
-    public User(int dbId, String username, String password, String firstName, String lastName) {
+    public User(int dbId, String username, String firstName, String lastName, Role userRole) {
         this.dbId = dbId;
         this.username = username;
-        this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.userRole = userRole;
     }
 
     public User(String username, String password) {
@@ -37,6 +36,14 @@ public class User {
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+    public User(String username, String password, String firstName, String lastName, Role userRole) {
+        this.username = username;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.userRole = userRole;
     }
 
     public User(int dbId, String username, String password, String firstName, String lastName, Role userRole, SkillBlock[] skillsBlocks) {
