@@ -389,13 +389,46 @@ public class DatabaseHandler {
         return null;
     }
 
+    public SkillBlock getSkillBlockById(int id) {
+        String sql = "SELECT * FROM " + SKILLBLOCK_TABLE_NAME + " WHERE `id`='" + id + "'";
+        try {
+            ResultSet rs = statement.executeQuery(sql);
+            if(rs.next()){
+                return new SkillBlock(rs.getInt(1), rs.getString(2), rs.getString(3));
+            }
+            System.out.println("Requested skillblock doesn't exist!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return null;
+    }
+
     public SkillBlock[] getAllSkillBlock() {
         String sql = "SELECT * FROM " + SKILLBLOCK_TABLE_NAME;
         ArrayList<SkillBlock> skillblocks = new ArrayList<SkillBlock>();
-        try {
-            ResultSet rs = statement.executeQuery(sql);
+        try(ResultSet rs = statement.executeQuery(sql)) {
             while(rs.next()){
                 skillblocks.add(new SkillBlock(rs.getInt(1), rs.getString(2), rs.getString(3)));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        SkillBlock[] output = skillblocks.toArray(new SkillBlock[skillblocks.size()]);
+        return output;
+    }
+
+    public SkillBlock[] getSubscribedSkillBlock(int userId) {
+        String sql = "SELECT * FROM " + USER_SKILLBLOCKS_TABLE_NAME + " WHERE `" + USER_SKILLBLOCKS_USER_ID + "`=" + userId;
+        ArrayList<SkillBlock> skillblocks = new ArrayList<SkillBlock>();
+        try(
+            Statement st = conn.createStatement(); 
+            ResultSet rs = st.executeQuery(sql)) 
+        {
+            while(rs.next()){
+                skillblocks.add(getSkillBlockById(rs.getInt(3)));
             }
         } catch (SQLException e) {
             e.printStackTrace();

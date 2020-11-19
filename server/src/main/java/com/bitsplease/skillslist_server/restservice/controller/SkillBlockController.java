@@ -49,6 +49,21 @@ public class SkillBlockController {
         }
     }
 
+    @GetMapping("/getSubscribedSkillBlock")
+    public Response getSubscribed(
+        @RequestParam(value = "userId") int id
+    )
+    {
+        SkillBlock[] skillblock = SkillslistServerApplication.db.getSubscribedSkillBlock(id);
+        if(skillblock != null) {
+            Gson gson = new Gson();
+            String contentJson = gson.toJson(skillblock);
+            return new Response(counter.incrementAndGet(), contentJson);
+        } else {
+            return new Response(counter.incrementAndGet(), "");
+        }
+    }
+
     @PostMapping(path = "/subscribe", consumes = "application/json", produces = "application/json")
     public SuccessState subscribe(
         @RequestBody StringPair content 
