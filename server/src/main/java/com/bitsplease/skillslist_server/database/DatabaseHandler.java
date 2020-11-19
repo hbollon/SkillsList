@@ -24,52 +24,46 @@ public class DatabaseHandler {
     private final String USER_DB_FIRSTNAME = "first_name";
     private final String USER_DB_LASTNAME = "last_name";
     private final String USER_DB_SQL = "CREATE TABLE IF NOT EXISTS user " + "(id INT NOT NULL AUTO_INCREMENT, "
-    + " username VARCHAR(255), " + " password VARCHAR(255), " + "salt VARCHAR(255)," + " first_name VARCHAR(255), "
-    + " last_name VARCHAR(255), " + " PRIMARY KEY ( id ))";
+            + " username VARCHAR(255), " + " password VARCHAR(255), " + "salt VARCHAR(255),"
+            + " first_name VARCHAR(255), " + " last_name VARCHAR(255), " + " PRIMARY KEY ( id ))";
 
     private final String SKILLBLOCK_TABLE_NAME = "skillblock";
     private final String SKILLBLOCK_DB_NAME = "name";
     private final String SKILLBLOCK_DB_DESC = "description";
-    private final String SKILLBLOCK_DB_SQL = "CREATE TABLE IF NOT EXISTS skillblock " + "(id INT NOT NULL AUTO_INCREMENT, "
-    + " name VARCHAR(255), " + " description VARCHAR(255), " + " PRIMARY KEY ( id ))";
+    private final String SKILLBLOCK_DB_SQL = "CREATE TABLE IF NOT EXISTS skillblock "
+            + "(id INT NOT NULL AUTO_INCREMENT, " + " name VARCHAR(255), " + " description VARCHAR(255), "
+            + " PRIMARY KEY ( id ))";
 
     private final String SKILL_TABLE_NAME = "skill";
     private final String SKILL_DB_NAME = "name";
     private final String SKILL_DB_DESC = "description";
     private final String SKILL_SKILLBLOCK_ID = "skillblock_id";
-    private final String SKILL_DB_SQL = 
-        "CREATE TABLE IF NOT EXISTS " + SKILL_TABLE_NAME + " ( id INT NOT NULL AUTO_INCREMENT, " + 
-        "name VARCHAR(255), " + 
-        "description VARCHAR(255), " + 
-        "skillblock_id INT, " + 
-        "PRIMARY KEY ( id ), FOREIGN KEY(" + SKILL_SKILLBLOCK_ID + ") REFERENCES " + SKILLBLOCK_TABLE_NAME + "(id))";
+    private final String SKILL_DB_SQL = "CREATE TABLE IF NOT EXISTS " + SKILL_TABLE_NAME
+            + " ( id INT NOT NULL AUTO_INCREMENT, " + "name VARCHAR(255), " + "description VARCHAR(255), "
+            + "skillblock_id INT, " + "PRIMARY KEY ( id ), FOREIGN KEY(" + SKILL_SKILLBLOCK_ID + ") REFERENCES "
+            + SKILLBLOCK_TABLE_NAME + "(id))";
 
     private final String USER_SKILLBLOCKS_TABLE_NAME = "user_skillblock";
     private final String USER_SKILLBLOCKS_USER_ID = "user_id";
     private final String USER_SKILLBLOCKS_SKILLBLOCK_ID = "skillblock_id";
-    private final String USER_SKILLBLOCKS_DB_SQL = 
-        "CREATE TABLE IF NOT EXISTS " + USER_SKILLBLOCKS_TABLE_NAME + " ( id INT NOT NULL AUTO_INCREMENT, " + 
-        "user_id INT, " + 
-        "skillblock_id INT, " + 
-        "PRIMARY KEY ( id ), " + 
-        "FOREIGN KEY(" + USER_SKILLBLOCKS_USER_ID + ") REFERENCES " + USER_TABLE_NAME + "(id), " + 
-        "FOREIGN KEY(" + USER_SKILLBLOCKS_SKILLBLOCK_ID + ") REFERENCES " + SKILLBLOCK_TABLE_NAME + "(id))";
+    private final String USER_SKILLBLOCKS_DB_SQL = "CREATE TABLE IF NOT EXISTS " + USER_SKILLBLOCKS_TABLE_NAME
+            + " ( id INT NOT NULL AUTO_INCREMENT, " + "user_id INT, " + "skillblock_id INT, " + "PRIMARY KEY ( id ), "
+            + "FOREIGN KEY(" + USER_SKILLBLOCKS_USER_ID + ") REFERENCES " + USER_TABLE_NAME + "(id), " + "FOREIGN KEY("
+            + USER_SKILLBLOCKS_SKILLBLOCK_ID + ") REFERENCES " + SKILLBLOCK_TABLE_NAME + "(id))";
 
     private final String USER_SKILLS_TABLE_NAME = "user_skill";
     private final String USER_SKILLS_USER_ID = "user_id";
     private final String USER_SKILLS_SKILL_ID = "skill_id";
     private final String USER_SKILLS_SKILL_STATUS = "status";
-    private final String USER_SKILLS_DB_SQL = 
-        "CREATE TABLE IF NOT EXISTS " + USER_SKILLS_TABLE_NAME + " ( id INT NOT NULL AUTO_INCREMENT, " + 
-        "user_id INT, " + 
-        "skill_id INT, " + 
-        "status INT, " + 
-        "PRIMARY KEY ( id ), " + 
-        "FOREIGN KEY(" + USER_SKILLS_USER_ID + ") REFERENCES " + USER_TABLE_NAME + "(id), " + 
-        "FOREIGN KEY(" + USER_SKILLS_SKILL_ID + ") REFERENCES " + SKILL_TABLE_NAME + "(id))";
+    private final String USER_SKILLS_DB_SQL = "CREATE TABLE IF NOT EXISTS " + USER_SKILLS_TABLE_NAME
+            + " ( id INT NOT NULL AUTO_INCREMENT, " + "user_id INT, " + "skill_id INT, " + "status INT, "
+            + "PRIMARY KEY ( id ), " + "FOREIGN KEY(" + USER_SKILLS_USER_ID + ") REFERENCES " + USER_TABLE_NAME
+            + "(id), " + "FOREIGN KEY(" + USER_SKILLS_SKILL_ID + ") REFERENCES " + SKILL_TABLE_NAME + "(id))";
 
-    private final String[] TABLES = {USER_TABLE_NAME, SKILLBLOCK_TABLE_NAME, SKILL_TABLE_NAME, USER_SKILLBLOCKS_TABLE_NAME, USER_SKILLS_TABLE_NAME};
-    private final String[] TABLES_SQL = {USER_DB_SQL, SKILLBLOCK_DB_SQL, SKILL_DB_SQL, USER_SKILLBLOCKS_DB_SQL, USER_SKILLS_DB_SQL};
+    private final String[] TABLES = { USER_TABLE_NAME, SKILLBLOCK_TABLE_NAME, SKILL_TABLE_NAME,
+            USER_SKILLBLOCKS_TABLE_NAME, USER_SKILLS_TABLE_NAME };
+    private final String[] TABLES_SQL = { USER_DB_SQL, SKILLBLOCK_DB_SQL, SKILL_DB_SQL, USER_SKILLBLOCKS_DB_SQL,
+            USER_SKILLS_DB_SQL };
 
     private Connection conn;
     private Statement statement;
@@ -94,7 +88,7 @@ public class DatabaseHandler {
     /**
      * Clear all tables of the db
      */
-    private void clearAllTables(){
+    private void clearAllTables() {
         try {
             statement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
             for (String table : TABLES) {
@@ -123,10 +117,11 @@ public class DatabaseHandler {
         try {
             String check_existing_request = "SELECT * FROM user WHERE `" + USER_DB_USERNAME + "`='" + u.getUsername() + "'";
 
-            ResultSet rs = statement.executeQuery(check_existing_request);
-            if(rs.next()) {
-                System.out.println("Error: User already exists !");
-                return false;
+            try(ResultSet rs = statement.executeQuery(check_existing_request)){
+                if(rs.next()) {
+                    System.out.println("Error: User already exists !");
+                    return false;
+                }
             }
             String sql = "INSERT INTO " + USER_TABLE_NAME + "(`" + USER_DB_USERNAME + "`, `" + USER_DB_PASSWORD + "`, `"
             + USER_DB_PASSWORD_SALT + "`, `" + USER_DB_FIRSTNAME + "`, `" + USER_DB_LASTNAME + "`) VALUES (?, ?, ?, ?, ?)";
@@ -155,8 +150,8 @@ public class DatabaseHandler {
 
     public boolean updateUser(User u) {
         try {
-            String sql = "UPDATE " + USER_TABLE_NAME + " SET " + USER_DB_USERNAME + "=?, "
-            + USER_DB_FIRSTNAME + "=?, " + USER_DB_LASTNAME + "=? WHERE " + USER_DB_USERNAME + "=?";
+            String sql = "UPDATE " + USER_TABLE_NAME + " SET " + USER_DB_USERNAME + "=?, " + USER_DB_FIRSTNAME + "=?, "
+                    + USER_DB_LASTNAME + "=? WHERE " + USER_DB_USERNAME + "=?";
 
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setString(1, u.getUsername());
@@ -177,7 +172,7 @@ public class DatabaseHandler {
         }
     }
 
-    public boolean deleteUser(String username){
+    public boolean deleteUser(String username) {
         String sql = "DELETE FROM user WHERE `" + USER_DB_USERNAME + "`='" + username + "'";
         try {
             int result = statement.executeUpdate(sql);
@@ -196,9 +191,8 @@ public class DatabaseHandler {
 
     public int getUserId(String login) {
         String sql = "SELECT * FROM user WHERE `" + USER_DB_USERNAME + "`='" + login + "'";
-        try {
-            ResultSet rs = statement.executeQuery(sql);
-            if(rs.next()){
+        try (ResultSet rs = statement.executeQuery(sql)) {
+            if (rs.next()) {
                 return rs.getInt(1);
             }
             System.out.println("User not find!");
@@ -210,10 +204,9 @@ public class DatabaseHandler {
 
     public User connectUser(String login, String password) {
         String sql = "SELECT * FROM user WHERE `" + USER_DB_USERNAME + "`='" + login + "'";
-        try {
-            ResultSet rs = statement.executeQuery(sql);
-            if(rs.next()){
-                if(HashUtils.verifyUserPassword(password, rs.getString(3), rs.getString(4))){
+        try (ResultSet rs = statement.executeQuery(sql)) {
+            if (rs.next()) {
+                if (HashUtils.verifyUserPassword(password, rs.getString(3), rs.getString(4))) {
                     System.out.println("User succesfully logged in!");
                     return new User(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(5), rs.getString(6));
                 }
@@ -229,25 +222,29 @@ public class DatabaseHandler {
         System.out.println("Trying to subscribe to new skillblock...");
         try {
             int userId = getUserId(u);
-            if(userId == -1) {
+            if (userId == -1) {
                 System.out.println("Error: User don't exist !");
                 return false;
             }
 
             SkillBlock skillblock = getSkillBlock(s);
-            if(skillblock == null) {
+            if (skillblock == null) {
                 System.out.println("Error: Skillblock don't exist !");
                 return false;
             }
 
-            String check_existing_request = "SELECT * FROM " + USER_SKILLBLOCKS_TABLE_NAME + " WHERE `" + USER_SKILLBLOCKS_USER_ID + "`='" + userId + "' AND `" + USER_SKILLBLOCKS_SKILLBLOCK_ID + "`='" + skillblock.getDbId() + "'";
-            ResultSet rs = statement.executeQuery(check_existing_request);
-            if(rs.next()) {
-                System.out.println("Error: User already subscribed to this skillblock !");
-                return false;
+            String check_existing_request = "SELECT * FROM " + USER_SKILLBLOCKS_TABLE_NAME + " WHERE `"
+                    + USER_SKILLBLOCKS_USER_ID + "`='" + userId + "' AND `" + USER_SKILLBLOCKS_SKILLBLOCK_ID + "`='"
+                    + skillblock.getDbId() + "'";
+            try(ResultSet rs = statement.executeQuery(check_existing_request)) {
+                if (rs.next()) {
+                    System.out.println("Error: User already subscribed to this skillblock !");
+                    return false;
+                }
             }
 
-            String sql = "INSERT INTO " + USER_SKILLBLOCKS_TABLE_NAME + "(`" + USER_SKILLBLOCKS_USER_ID + "`, `" + USER_SKILLBLOCKS_SKILLBLOCK_ID + "`) VALUES (?, ?)";
+            String sql = "INSERT INTO " + USER_SKILLBLOCKS_TABLE_NAME + "(`" + USER_SKILLBLOCKS_USER_ID + "`, `"
+                    + USER_SKILLBLOCKS_SKILLBLOCK_ID + "`) VALUES (?, ?)";
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setInt(1, userId);
             statement.setInt(2, skillblock.getDbId());
@@ -306,10 +303,8 @@ public class DatabaseHandler {
 
     public boolean insertSkillBlock(SkillBlock s) {
         System.out.println("Trying to insert new skillblock...");
-        try {
-            String check_existing_request = "SELECT * FROM skillblock WHERE `" + SKILLBLOCK_DB_NAME + "`='" + s.getBlockName() + "'";
-
-            ResultSet rs = statement.executeQuery(check_existing_request);
+        String check_existing_request = "SELECT * FROM skillblock WHERE `" + SKILLBLOCK_DB_NAME + "`='" + s.getBlockName() + "'";
+        try(ResultSet rs = statement.executeQuery(check_existing_request);) {
             if(rs.next()) {
                 System.out.println("Error: SkillBlock already exists !");
                 return false;
@@ -376,8 +371,21 @@ public class DatabaseHandler {
 
     public SkillBlock getSkillBlock(String name) {
         String sql = "SELECT * FROM " + SKILLBLOCK_TABLE_NAME + " WHERE `" + SKILLBLOCK_DB_NAME + "`='" + name + "'";
-        try {
-            ResultSet rs = statement.executeQuery(sql);
+        try(ResultSet rs = statement.executeQuery(sql);) {
+            if(rs.next()){
+                return new SkillBlock(rs.getInt(1), rs.getString(2), rs.getString(3));
+            }
+            System.out.println("Requested skillblock doesn't exist!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return null;
+    }
+
+    public SkillBlock getSkillBlockById(int id) {
+        String sql = "SELECT * FROM " + SKILLBLOCK_TABLE_NAME + " WHERE `id`='" + id + "'";
+        try(ResultSet rs = statement.executeQuery(sql);) {
             if(rs.next()){
                 return new SkillBlock(rs.getInt(1), rs.getString(2), rs.getString(3));
             }
@@ -392,10 +400,28 @@ public class DatabaseHandler {
     public SkillBlock[] getAllSkillBlock() {
         String sql = "SELECT * FROM " + SKILLBLOCK_TABLE_NAME;
         ArrayList<SkillBlock> skillblocks = new ArrayList<SkillBlock>();
-        try {
-            ResultSet rs = statement.executeQuery(sql);
+        try(ResultSet rs = statement.executeQuery(sql)) {
             while(rs.next()){
                 skillblocks.add(new SkillBlock(rs.getInt(1), rs.getString(2), rs.getString(3)));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        SkillBlock[] output = skillblocks.toArray(new SkillBlock[skillblocks.size()]);
+        return output;
+    }
+
+    public SkillBlock[] getSubscribedSkillBlock(int userId) {
+        String sql = "SELECT * FROM " + USER_SKILLBLOCKS_TABLE_NAME + " WHERE `" + USER_SKILLBLOCKS_USER_ID + "`=" + userId;
+        ArrayList<SkillBlock> skillblocks = new ArrayList<SkillBlock>();
+        try(
+            Statement st = conn.createStatement(); 
+            ResultSet rs = st.executeQuery(sql)) 
+        {
+            while(rs.next()){
+                skillblocks.add(getSkillBlockById(rs.getInt(3)));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -420,10 +446,11 @@ public class DatabaseHandler {
             }
 
             String check_existing_request = "SELECT * FROM skill WHERE `" + SKILL_DB_NAME + "`='" + skill.getSkillName() + "'";
-            ResultSet rs = statement.executeQuery(check_existing_request);
-            if(rs.next()) {
-                System.out.println("Error: Skill already exists in this SkillBlock !");
-                return false;
+            try(ResultSet rs = statement.executeQuery(check_existing_request)){
+                if(rs.next()) {
+                    System.out.println("Error: Skill already exists in this SkillBlock !");
+                    return false;
+                }
             }
 
             String sql = "INSERT INTO " + SKILL_TABLE_NAME + "(`" + SKILLBLOCK_DB_NAME + "`, `" + SKILLBLOCK_DB_DESC + "`, `" + SKILL_SKILLBLOCK_ID + "`) VALUES (?, ?, ?)";
@@ -491,8 +518,7 @@ public class DatabaseHandler {
         SkillBlock skillBlock = getSkillBlock(skillblockname);
         String sql = "SELECT * FROM " + SKILL_TABLE_NAME + " WHERE " + SKILL_SKILLBLOCK_ID + "=" + skillBlock.getDbId();
         ArrayList<Skill> skills = new ArrayList<Skill>();
-        try {
-            ResultSet rs = statement.executeQuery(sql);
+        try(ResultSet rs = statement.executeQuery(sql)) {
             while(rs.next()){
                 skills.add(new Skill(rs.getInt(1), rs.getInt(4), rs.getString(2), rs.getString(3)));
             }
