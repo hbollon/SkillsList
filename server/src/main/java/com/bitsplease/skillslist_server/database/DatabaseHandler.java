@@ -35,7 +35,7 @@ public class DatabaseHandler {
     private final String USER_DB_ROLE = "role_id";
     private final String USER_DB_SQL = "CREATE TABLE IF NOT EXISTS user " + "(id INT NOT NULL AUTO_INCREMENT, "
             + " username VARCHAR(255), " + " password VARCHAR(255), " + "salt VARCHAR(255),"
-            + " first_name VARCHAR(255), " + " last_name VARCHAR(255), " + " PRIMARY KEY ( id ), "
+            + " first_name VARCHAR(255), " + " last_name VARCHAR(255), " + " role_id INT," + " PRIMARY KEY ( id ), "
             + "FOREIGN KEY(" + USER_DB_ROLE + ") REFERENCES " + ROLE_TABLE_NAME + "(id))";
 
     private final String SKILLBLOCK_TABLE_NAME = "skillblock";
@@ -187,6 +187,19 @@ public class DatabaseHandler {
         return null;
     }
 
+    public Role getRoleById(int id) {
+        String sql = "SELECT * FROM " + ROLE_TABLE_NAME + " WHERE `id`='" + id + "'";
+        try (ResultSet rs = statement.executeQuery(sql)) {
+            if (rs.next()) {
+                return new Role(rs.getInt(1), rs.getString(2), rs.getBoolean(3), rs.getBoolean(4));
+            }
+            System.out.println("Role not recognized!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     /**
      * Users Interactions
      */
@@ -195,17 +208,20 @@ public class DatabaseHandler {
         System.out.println("Trying to register new user...");
         try {
             String check_existing_request = "SELECT * FROM user WHERE `" + USER_DB_USERNAME + "`='" + u.getUsername() + "'";
-
             try(ResultSet rs = statement.executeQuery(check_existing_request)){
                 if(rs.next()) {
                     System.out.println("Error: User already exists !");
                     return false;
                 }
             }
+
             String sql = "INSERT INTO " + USER_TABLE_NAME + "(`" + USER_DB_USERNAME + "`, `" + USER_DB_PASSWORD + "`, `"
-            + USER_DB_PASSWORD_SALT + "`, `" + USER_DB_FIRSTNAME + "`, `" + USER_DB_LASTNAME + "`) VALUES (?, ?, ?, ?, ?)";
+            + USER_DB_PASSWORD_SALT + "`, `" + USER_DB_FIRSTNAME + "`, `" + USER_DB_LASTNAME + "`, `" + USER_DB_ROLE + "`) VALUES (?, ?, ?, ?, ?, ?)";
 
             String salt = HashUtils.getSalt(30);
+            if(u.getDbId() == 0) {
+                u.setUserRole(getRole(u.getUserRole().getRoleName()));
+            }
 
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setString(1, u.getUsername());
@@ -213,6 +229,7 @@ public class DatabaseHandler {
             statement.setString(3, salt);
             statement.setString(4, u.getFirstName());
             statement.setString(5, u.getLastName());
+            statement.setInt(6, u.getUserRole().getDbId());
 
             int result = statement.executeUpdate();
             if (result > 0) {
@@ -230,13 +247,14 @@ public class DatabaseHandler {
     public boolean updateUser(User u) {
         try {
             String sql = "UPDATE " + USER_TABLE_NAME + " SET " + USER_DB_USERNAME + "=?, " + USER_DB_FIRSTNAME + "=?, "
-                    + USER_DB_LASTNAME + "=? WHERE " + USER_DB_USERNAME + "=?";
+                    + USER_DB_LASTNAME + "=?, " + USER_DB_ROLE + "=? WHERE " + USER_DB_USERNAME + "=?";
 
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setString(1, u.getUsername());
             statement.setString(2, u.getFirstName());
             statement.setString(3, u.getLastName());
             statement.setString(4, u.getUsername());
+            statement.setInt(5, u.getUserRole().getDbId());
 
             int result = statement.executeUpdate();
             if (result > 0) {
@@ -287,7 +305,7 @@ public class DatabaseHandler {
             if (rs.next()) {
                 if (HashUtils.verifyUserPassword(password, rs.getString(3), rs.getString(4))) {
                     System.out.println("User succesfully logged in!");
-                    return new User(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(5), rs.getString(6));
+                    return new User(rs.getInt(1), rs.getString(2), rs.getString(5), rs.getString(6), getRoleById(rs.getInt(7)));
                 }
             }
             System.out.println("User not recognized!");

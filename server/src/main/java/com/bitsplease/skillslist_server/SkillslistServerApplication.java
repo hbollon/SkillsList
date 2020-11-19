@@ -23,7 +23,11 @@ public class SkillslistServerApplication {
 		studentRole.setCanValidate(false);
 		db.updateRole(studentRole);
 
-		db.insertUser(new User("hbollon", "coucou", "Hugo", "Bollon"));
+		// teacherRole = db.getRole("Teacher");
+		// studentRole = db.getRole("Student");
+
+		db.insertUser(new User("hbollon", "coucou", "Hugo", "Bollon", teacherRole));
+		db.updateUser(new User("hbollon", "coucou", "Hugo", "Bollon", studentRole));
 		User currentUser = db.connectUser("hbollon", "coucou");
 
 		db.insertSkillBlock(new SkillBlock("C++", "Your skill in this language"));

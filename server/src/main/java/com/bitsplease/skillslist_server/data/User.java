@@ -19,12 +19,12 @@ public class User {
         this.username = username;
     }
     
-    public User(int dbId, String username, String password, String firstName, String lastName) {
+    public User(int dbId, String username, String firstName, String lastName, Role role) {
         this.dbId = dbId;
         this.username = username;
-        this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.userRole = role;
     }
 
     public User(String username, String password) {
