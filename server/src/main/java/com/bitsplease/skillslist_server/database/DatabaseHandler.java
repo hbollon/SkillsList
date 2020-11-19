@@ -200,6 +200,22 @@ public class DatabaseHandler {
         return null;
     }
 
+    public Role[] getAllRoles() {
+        String sql = "SELECT * FROM " + ROLE_TABLE_NAME;
+        ArrayList<Role> roles = new ArrayList<Role>();
+        try(ResultSet rs = statement.executeQuery(sql)) {
+            while(rs.next()){
+                roles.add(new Role(rs.getInt(1), rs.getString(2), rs.getBoolean(3), rs.getBoolean(4)));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        Role[] output = roles.toArray(new Role[roles.size()]);
+        return output;
+    }
+
     /**
      * Users Interactions
      */
@@ -218,10 +234,11 @@ public class DatabaseHandler {
             String sql = "INSERT INTO " + USER_TABLE_NAME + "(`" + USER_DB_USERNAME + "`, `" + USER_DB_PASSWORD + "`, `"
             + USER_DB_PASSWORD_SALT + "`, `" + USER_DB_FIRSTNAME + "`, `" + USER_DB_LASTNAME + "`, `" + USER_DB_ROLE + "`) VALUES (?, ?, ?, ?, ?, ?)";
 
-            String salt = HashUtils.getSalt(30);
             if(u.getDbId() == 0) {
                 u.setUserRole(getRole(u.getUserRole().getRoleName()));
             }
+
+            String salt = HashUtils.getSalt(30);
 
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setString(1, u.getUsername());
@@ -249,12 +266,16 @@ public class DatabaseHandler {
             String sql = "UPDATE " + USER_TABLE_NAME + " SET " + USER_DB_USERNAME + "=?, " + USER_DB_FIRSTNAME + "=?, "
                     + USER_DB_LASTNAME + "=?, " + USER_DB_ROLE + "=? WHERE " + USER_DB_USERNAME + "=?";
 
+            if(u.getDbId() == 0) {
+                u.setUserRole(getRole(u.getUserRole().getRoleName()));
+            }
+
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setString(1, u.getUsername());
             statement.setString(2, u.getFirstName());
             statement.setString(3, u.getLastName());
-            statement.setString(4, u.getUsername());
-            statement.setInt(5, u.getUserRole().getDbId());
+            statement.setInt(4, u.getUserRole().getDbId());
+            statement.setString(5, u.getUsername());
 
             int result = statement.executeUpdate();
             if (result > 0) {

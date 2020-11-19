@@ -6,6 +6,12 @@ public class Role {
     private boolean canValidate;
     private boolean canAddSkill;
 
+    public Role() {}
+
+    public Role(String roleName) {
+        this.roleName = roleName;
+    }
+
     public Role(String roleName, boolean canValidate, boolean canAddSkill) {
         this.roleName = roleName;
         this.canValidate = canValidate;
