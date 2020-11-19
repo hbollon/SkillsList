@@ -1,5 +1,6 @@
 package com.bitsplease.skillslist_server.database;
 
+import com.bitsplease.skillslist_server.data.Role;
 import com.bitsplease.skillslist_server.data.Skill;
 import com.bitsplease.skillslist_server.data.SkillBlock;
 import com.bitsplease.skillslist_server.data.User;
@@ -16,6 +17,14 @@ public class DatabaseHandler {
     private final String user = "testuser";
     private final String password = "password";
     private final String urlOptions = "&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+    
+    private final String ROLE_TABLE_NAME = "role";
+    private final String ROLE_DB_NAME = "name";
+    private final String ROLE_DB_CAN_VALIDATE = "can_validate";
+    private final String ROLE_DB_CAN_ADD_SKILL = "can_add_skill";
+    private final String ROLE_DB_SQL = "CREATE TABLE IF NOT EXISTS " + ROLE_TABLE_NAME + "(id INT NOT NULL AUTO_INCREMENT, "
+            + ROLE_DB_NAME + " VARCHAR(255), " + ROLE_DB_CAN_VALIDATE + " BOOLEAN, " + ROLE_DB_CAN_ADD_SKILL + " BOOLEAN,"
+            + " PRIMARY KEY ( id ))";
 
     private final String USER_TABLE_NAME = "user";
     private final String USER_DB_USERNAME = "username";
@@ -23,9 +32,11 @@ public class DatabaseHandler {
     private final String USER_DB_PASSWORD_SALT = "salt";
     private final String USER_DB_FIRSTNAME = "first_name";
     private final String USER_DB_LASTNAME = "last_name";
+    private final String USER_DB_ROLE = "role_id";
     private final String USER_DB_SQL = "CREATE TABLE IF NOT EXISTS user " + "(id INT NOT NULL AUTO_INCREMENT, "
             + " username VARCHAR(255), " + " password VARCHAR(255), " + "salt VARCHAR(255),"
-            + " first_name VARCHAR(255), " + " last_name VARCHAR(255), " + " PRIMARY KEY ( id ))";
+            + " first_name VARCHAR(255), " + " last_name VARCHAR(255), " + " PRIMARY KEY ( id ), "
+            + "FOREIGN KEY(" + USER_DB_ROLE + ") REFERENCES " + ROLE_TABLE_NAME + "(id))";
 
     private final String SKILLBLOCK_TABLE_NAME = "skillblock";
     private final String SKILLBLOCK_DB_NAME = "name";
@@ -60,9 +71,9 @@ public class DatabaseHandler {
             + "PRIMARY KEY ( id ), " + "FOREIGN KEY(" + USER_SKILLS_USER_ID + ") REFERENCES " + USER_TABLE_NAME
             + "(id), " + "FOREIGN KEY(" + USER_SKILLS_SKILL_ID + ") REFERENCES " + SKILL_TABLE_NAME + "(id))";
 
-    private final String[] TABLES = { USER_TABLE_NAME, SKILLBLOCK_TABLE_NAME, SKILL_TABLE_NAME,
+    private final String[] TABLES = { ROLE_TABLE_NAME, USER_TABLE_NAME, SKILLBLOCK_TABLE_NAME, SKILL_TABLE_NAME,
             USER_SKILLBLOCKS_TABLE_NAME, USER_SKILLS_TABLE_NAME };
-    private final String[] TABLES_SQL = { USER_DB_SQL, SKILLBLOCK_DB_SQL, SKILL_DB_SQL, USER_SKILLBLOCKS_DB_SQL,
+    private final String[] TABLES_SQL = { ROLE_DB_SQL, USER_DB_SQL, SKILLBLOCK_DB_SQL, SKILL_DB_SQL, USER_SKILLBLOCKS_DB_SQL,
             USER_SKILLS_DB_SQL };
 
     private Connection conn;
@@ -105,15 +116,83 @@ public class DatabaseHandler {
     }
 
     /**
+     * Role Interactions
+     */
+
+    public boolean insertRole(Role r) {
+        System.out.println("Trying to add new role...");
+        try {
+            String check_existing_request = "SELECT * FROM " + ROLE_TABLE_NAME + " WHERE `" + ROLE_DB_NAME + "`='" + r.getRoleName() + "'";
+            try(ResultSet rs = statement.executeQuery(check_existing_request)){
+                if(rs.next()) {
+                    System.out.println("Error: Role already exists !");
+                    return false;
+                }
+            }
+
+            String sql = "INSERT INTO " + ROLE_TABLE_NAME + "(`" + ROLE_DB_NAME + "`, `" + ROLE_DB_CAN_VALIDATE + "`, `"
+            + ROLE_DB_CAN_ADD_SKILL + "`) VALUES (?, ?, ?)";
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1, r.getRoleName());
+            statement.setBoolean(2, r.getCanValidate());
+            statement.setBoolean(3, r.getCanAddSkill());
+
+            int result = statement.executeUpdate();
+            if (result > 0) {
+                System.out.println("A new role was inserted successfully!");
+                return true;
+            } else {
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean updateRole(Role r) {
+        try {
+            String sql = "UPDATE " + ROLE_TABLE_NAME + " SET " + ROLE_DB_NAME + "=?, " + ROLE_DB_CAN_VALIDATE + "=?, "
+                    + ROLE_DB_CAN_ADD_SKILL + "=? WHERE " + ROLE_DB_NAME + "=?";
+
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1, r.getRoleName());
+            statement.setBoolean(2, r.getCanValidate());
+            statement.setBoolean(3, r.getCanAddSkill());
+            statement.setString(4, r.getRoleName());
+
+            int result = statement.executeUpdate();
+            if (result > 0) {
+                System.out.println("The role was updated successfully!");
+                return true;
+            } else {
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public Role getRole(String name) {
+        String sql = "SELECT * FROM " + ROLE_TABLE_NAME + " WHERE `" + ROLE_DB_NAME + "`='" + name + "'";
+        try (ResultSet rs = statement.executeQuery(sql)) {
+            if (rs.next()) {
+                return new Role(rs.getInt(1), rs.getString(2), rs.getBoolean(3), rs.getBoolean(4));
+            }
+            System.out.println("Role not recognized!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
      * Users Interactions
      */
 
     public boolean insertUser(User u) {
         System.out.println("Trying to register new user...");
-        System.out.println("Username : " + u.getUsername());
-        System.out.println("Password : " + u.getPassword());
-        System.out.println("First Name : " + u.getFirstName());
-        System.out.println("Last Name : " + u.getLastName());
         try {
             String check_existing_request = "SELECT * FROM user WHERE `" + USER_DB_USERNAME + "`='" + u.getUsername() + "'";
 

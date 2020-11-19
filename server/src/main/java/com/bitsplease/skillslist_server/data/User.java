@@ -39,6 +39,14 @@ public class User {
         this.lastName = lastName;
     }
 
+    public User(String username, String password, String firstName, String lastName, Role role) {
+        this.username = username;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.userRole = role;
+    }
+
     public User(int dbId, String username, String password, String firstName, String lastName, Role userRole, SkillBlock[] skillsBlocks) {
         this.dbId = dbId;
         this.username = username;

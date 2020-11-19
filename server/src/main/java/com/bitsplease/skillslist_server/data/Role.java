@@ -1,12 +1,30 @@
 package com.bitsplease.skillslist_server.data;
 
-import java.util.Objects;
-
 public class Role {
+    private int dbId;
     private String roleName;
+    private boolean canValidate;
+    private boolean canAddSkill;
 
-    public Role(String roleName) {
+    public Role(String roleName, boolean canValidate, boolean canAddSkill) {
         this.roleName = roleName;
+        this.canValidate = canValidate;
+        this.canAddSkill = canAddSkill;
+    }
+
+    public Role(int dbId, String roleName, boolean canValidate, boolean canAddSkill) {
+        this.dbId = dbId;
+        this.roleName = roleName;
+        this.canValidate = canValidate;
+        this.canAddSkill = canAddSkill;
+    }
+
+    public int getDbId() {
+        return this.dbId;
+    }
+
+    public void setDbId(int dbId) {
+        this.dbId = dbId;
     }
 
     public String getRoleName() {
@@ -17,26 +35,29 @@ public class Role {
         this.roleName = roleName;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof Role)) {
-            return false;
-        }
-        Role role = (Role) o;
-        return Objects.equals(roleName, role.roleName);
+    public boolean getCanValidate() {
+        return this.canValidate;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(roleName);
+    public void setCanValidate(boolean canValidate) {
+        this.canValidate = canValidate;
     }
 
+    public boolean getCanAddSkill() {
+        return this.canAddSkill;
+    }
+
+    public void setCanAddSkill(boolean canAddSkill) {
+        this.canAddSkill = canAddSkill;
+    }
+    
     @Override
     public String toString() {
         return "{" +
-            " roleName='" + getRoleName() + "'" +
+            " dbId='" + getDbId() + "'" +
+            ", roleName='" + getRoleName() + "'" +
+            ", canValidate='" + getCanValidate() + "'" +
+            ", canAddSkill='" + getCanAddSkill() + "'" +
             "}";
     }
 

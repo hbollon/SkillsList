@@ -1,5 +1,6 @@
 package com.bitsplease.skillslist_server;
 
+import com.bitsplease.skillslist_server.data.Role;
 import com.bitsplease.skillslist_server.data.Skill;
 import com.bitsplease.skillslist_server.data.SkillBlock;
 import com.bitsplease.skillslist_server.data.User;
@@ -13,6 +14,15 @@ public class SkillslistServerApplication {
 	public static DatabaseHandler db = new DatabaseHandler();
 	public static void main(String[] args) {
 		db.resetAll();
+
+		Role teacherRole = new Role("Teacher", true, true);
+		Role studentRole = new Role("Student", true, true);
+		db.insertRole(teacherRole);
+		db.insertRole(studentRole);
+		studentRole.setCanAddSkill(false);
+		studentRole.setCanValidate(false);
+		db.updateRole(studentRole);
+
 		db.insertUser(new User("hbollon", "coucou", "Hugo", "Bollon"));
 		User currentUser = db.connectUser("hbollon", "coucou");
 
