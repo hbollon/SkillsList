@@ -42,9 +42,12 @@ public class SkillslistServerApplication {
 		System.out.println(db.getSkillBlock("C++").toString());
 
 		db.insertSkill("Go", new Skill("COO", "ex1", true));
-		db.insertSkill("Go", new Skill("Pointeurs", "ex2", false));
-		db.updateSkill(new Skill("Pointeurs", "ex3", false));
-		db.deleteSkill("COO");
+		db.insertSkill("Go", new Skill("Pointeurs", "ex", false));
+		db.insertSkill("Go", new Skill("Modules", "ex", false));
+		db.insertSkill("C++", new Skill("COO", "ex", true));
+		db.insertSkill("C++", new Skill("Pointeurs", "ex", false));
+		db.updateSkill("Go", new Skill("Pointeurs", "ex3", false));
+		db.deleteSkill("Go", "COO");
 		Skill[] testSkills = db.getAllSkillFromSkillBlock("Go");
 		for (Skill skill : testSkills) {
 			System.out.println(skill.toString());
@@ -54,6 +57,11 @@ public class SkillslistServerApplication {
 		db.subscribeSkillBlock(currentUser.getUsername(), db.getSkillBlock("C").getBlockName());
 		db.subscribeSkillBlock(currentUser.getUsername(), db.getSkillBlock("C++").getBlockName());
 		db.unsubscribeSkillBlock(currentUser.getUsername(), db.getSkillBlock("C").getBlockName());
+
+		db.requestSkill(currentUser.getUsername(), "Pointeurs", "Go");
+		db.requestSkill(currentUser.getUsername(), "Modules", "Go");
+		db.requestSkill(currentUser.getUsername(), "Pointeurs", "C++");
+		db.requestSkill(currentUser.getUsername(), "COO", "C++");
 
 		SpringApplication.run(SkillslistServerApplication.class, args);
 	}
