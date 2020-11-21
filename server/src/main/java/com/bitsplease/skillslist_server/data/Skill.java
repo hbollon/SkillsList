@@ -7,26 +7,30 @@ public class Skill {
     private String skillName;
     private String skillDesc;
     private int skillblockId;
+    private boolean autoValidate;
 
     public Skill() {
     }
 
-    public Skill(String skillName, String skillDesc) {
+    public Skill(String skillName, String skillDesc, boolean autoValidate) {
         this.skillName = skillName;
         this.skillDesc = skillDesc;
+        this.autoValidate = autoValidate;
     }
 
-    public Skill(int id, String skillName, String skillDesc) {
+    public Skill(int skillblockId, String skillName, String skillDesc, boolean autoValidate) {
         this.skillName = skillName;
         this.skillDesc = skillDesc;
-        this.skillblockId = id;
+        this.skillblockId = skillblockId;
+        this.autoValidate = autoValidate;
     }
 
-    public Skill(int dbId, int id, String skillName, String skillDesc) {
+    public Skill(int dbId, int skillblockId, String skillName, String skillDesc, boolean autoValidate) {
         this.skillName = skillName;
         this.skillDesc = skillDesc;
-        this.skillblockId = id;
+        this.skillblockId = skillblockId;
         this.dbId = dbId;
+        this.autoValidate = autoValidate;
     }
 
     public int getDbId() {
@@ -35,14 +39,6 @@ public class Skill {
 
     public void setBlockName(int dbId) {
         this.dbId = dbId;
-    }
-
-    public int getSkillBlockId() {
-        return this.skillblockId;
-    }
-
-    public void setSkillBlockId(int id) {
-        this.skillblockId = id;
     }
 
     public String getSkillName() {
@@ -61,6 +57,23 @@ public class Skill {
         this.skillDesc = skillDesc;
     }
 
+    public int getSkillblockId() {
+        return this.skillblockId;
+    }
+
+    public void setSkillblockId(int skillblockId) {
+        this.skillblockId = skillblockId;
+    }
+
+    public boolean getAutoValidate() {
+        return this.autoValidate;
+    }
+
+    public void setAutoValidate(boolean autoValidate) {
+        this.autoValidate = autoValidate;
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (o == this)
@@ -69,19 +82,22 @@ public class Skill {
             return false;
         }
         Skill skill = (Skill) o;
-        return Objects.equals(skillName, skill.skillName) && Objects.equals(skillDesc, skill.skillDesc);
+        return dbId == skill.dbId && Objects.equals(skillName, skill.skillName) && Objects.equals(skillDesc, skill.skillDesc) && skillblockId == skill.skillblockId && autoValidate == skill.autoValidate;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(skillName, skillDesc);
+        return Objects.hash(dbId, skillName, skillDesc, skillblockId, autoValidate);
     }
 
     @Override
     public String toString() {
         return "{" +
-            " skillName='" + getSkillName() + "'" +
+            " dbId='" + getDbId() + "'" +
+            ", skillName='" + getSkillName() + "'" +
             ", skillDesc='" + getSkillDesc() + "'" +
+            ", skillblockId='" + getSkillblockId() + "'" +
+            ", autoValidate='" + getAutoValidate() + "'" +
             "}";
     }
 

@@ -49,9 +49,10 @@ public class DatabaseHandler {
     private final String SKILL_DB_NAME = "name";
     private final String SKILL_DB_DESC = "description";
     private final String SKILL_SKILLBLOCK_ID = "skillblock_id";
+    private final String SKILL_AUTO_VALIDATE = "auto_validation";
     private final String SKILL_DB_SQL = "CREATE TABLE IF NOT EXISTS " + SKILL_TABLE_NAME
             + " ( id INT NOT NULL AUTO_INCREMENT, " + "name VARCHAR(255), " + "description VARCHAR(255), "
-            + "skillblock_id INT, " + "PRIMARY KEY ( id ), FOREIGN KEY(" + SKILL_SKILLBLOCK_ID + ") REFERENCES "
+            + "skillblock_id INT, " + SKILL_AUTO_VALIDATE + " BOOLEAN, PRIMARY KEY ( id ), FOREIGN KEY(" + SKILL_SKILLBLOCK_ID + ") REFERENCES "
             + SKILLBLOCK_TABLE_NAME + "(id))";
 
     private final String USER_SKILLBLOCKS_TABLE_NAME = "user_skillblock";
@@ -111,8 +112,24 @@ public class DatabaseHandler {
         }
     }
 
-    public void resetAll() {
-        clearAllTables();
+    private void dropAllTables() {
+        try {
+            statement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+            for (String table : TABLES) {
+                statement.executeUpdate("DROP TABLE " + table);
+            }
+            statement.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
+            initDb();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void resetAll(boolean debug) {
+        if(debug)
+            dropAllTables();
+        else
+            clearAllTables();
     }
 
     /**
@@ -571,11 +588,12 @@ public class DatabaseHandler {
                 }
             }
 
-            String sql = "INSERT INTO " + SKILL_TABLE_NAME + "(`" + SKILLBLOCK_DB_NAME + "`, `" + SKILLBLOCK_DB_DESC + "`, `" + SKILL_SKILLBLOCK_ID + "`) VALUES (?, ?, ?)";
+            String sql = "INSERT INTO " + SKILL_TABLE_NAME + "(`" + SKILL_DB_NAME + "`, `" + SKILL_DB_DESC + "`, `" + SKILL_SKILLBLOCK_ID + "`, `" + SKILL_AUTO_VALIDATE + "`) VALUES (?, ?, ?, ?)";
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setString(1, skill.getSkillName());
             statement.setString(2, skill.getSkillDesc());
             statement.setInt(3, associatedSkillBlock.getDbId());
+            statement.setBoolean(4, skill.getAutoValidate());
 
             int result = statement.executeUpdate();
             if (result > 0) {
@@ -595,11 +613,13 @@ public class DatabaseHandler {
         try {
             String sql = "UPDATE " + SKILL_TABLE_NAME + " SET " + 
             SKILL_DB_NAME + "=?, " + 
-            SKILL_DB_DESC + "=? WHERE `" + SKILL_DB_NAME + "`='" + skill.getSkillName() + "'";
+            SKILL_DB_DESC + "=?, " + 
+            SKILL_AUTO_VALIDATE + "=? WHERE `" + SKILL_DB_NAME + "`='" + skill.getSkillName() + "'";
 
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setString(1, skill.getSkillName());
             statement.setString(2, skill.getSkillDesc());
+            statement.setBoolean(3, skill.getAutoValidate());
 
             int result = statement.executeUpdate();
             if (result > 0) {
@@ -638,7 +658,7 @@ public class DatabaseHandler {
         ArrayList<Skill> skills = new ArrayList<Skill>();
         try(ResultSet rs = statement.executeQuery(sql)) {
             while(rs.next()){
-                skills.add(new Skill(rs.getInt(1), rs.getInt(4), rs.getString(2), rs.getString(3)));
+                skills.add(new Skill(rs.getInt(1), rs.getInt(4), rs.getString(2), rs.getString(3), rs.getBoolean(5)));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -648,5 +668,7 @@ public class DatabaseHandler {
         Skill[] output = skills.toArray(new Skill[skills.size()]);
         return output;
     }
+
+
 
 }

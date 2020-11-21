@@ -13,7 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SkillslistServerApplication {
 	public static DatabaseHandler db = new DatabaseHandler();
 	public static void main(String[] args) {
-		db.resetAll();
+		db.resetAll(true);
 
 		Role teacherRole = new Role("Teacher", true, true);
 		Role studentRole = new Role("Student", true, true);
@@ -41,9 +41,9 @@ public class SkillslistServerApplication {
 		db.updateSkillBlock(new SkillBlock("C++", "You're a dumb bro!"));
 		System.out.println(db.getSkillBlock("C++").toString());
 
-		db.insertSkill("Go", new Skill("COO", "ex1"));
-		db.insertSkill("Go", new Skill("Pointeurs", "ex2"));
-		db.updateSkill(new Skill("Pointeurs", "ex3"));
+		db.insertSkill("Go", new Skill("COO", "ex1", true));
+		db.insertSkill("Go", new Skill("Pointeurs", "ex2", false));
+		db.updateSkill(new Skill("Pointeurs", "ex3", false));
 		db.deleteSkill("COO");
 		Skill[] testSkills = db.getAllSkillFromSkillBlock("Go");
 		for (Skill skill : testSkills) {
