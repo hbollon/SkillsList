@@ -707,6 +707,38 @@ public class DatabaseHandler {
         return null;
     }
 
+    public Skill getSkillById(int id) {
+        String sql = "SELECT * FROM " + SKILL_TABLE_NAME + " WHERE `id`='" + id + "'";
+        try(ResultSet rs = statement.executeQuery(sql);) {
+            if(rs.next()){
+                return new Skill(rs.getInt(1), rs.getInt(4), rs.getString(2), rs.getString(3), rs.getBoolean(5));
+            }
+            System.out.println("Requested skill doesn't exist!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return null;
+    }
+
+    public Skill[] getAllSkillOfUser(String username) {
+        String sql = "SELECT " + USER_SKILLS_SKILL_ID + " FROM " + USER_SKILLS_TABLE_NAME + " WHERE `" + USER_SKILLS_USER_ID + "`='" + getUserId(username) + "'";
+        ArrayList<Skill> userSkills = new ArrayList<Skill>();
+
+        try(Statement st = conn.createStatement(); 
+            ResultSet rs = st.executeQuery(sql)) {
+            while(rs.next()){
+                userSkills.add(getSkillById(rs.getInt(1)));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        Skill[] output = userSkills.toArray(new Skill[userSkills.size()]);
+        return output;
+    }
+
     public boolean requestSkill(String u, String s, String sb) {
         System.out.println("Trying to request new skill...");
         try {

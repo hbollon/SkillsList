@@ -71,6 +71,11 @@ public class SkillslistServerApplication {
 		db.validateSkill(admin.getUsername(), "hbollon", "Go", "Pointeurs");
 		db.validateSkill(test.getUsername(), "hbollon", "Go", "Modules");
 
+		Skill[] userSkills = db.getAllSkillOfUser("hbollon");
+		for (Skill skill : userSkills) {
+			System.out.println(skill.toString());
+		}
+
 		SpringApplication.run(SkillslistServerApplication.class, args);
 	}
 }
