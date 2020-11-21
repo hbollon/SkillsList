@@ -1,6 +1,5 @@
 package com.bitsplease.skillslist_server.data;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
 public class User {
@@ -10,14 +9,26 @@ public class User {
     private String firstName;
     private String lastName;
     private Role userRole;
-    private ArrayList<SkillBlock> skillsBlocks;
-    
-    public User(int dbId, String username, String password, String firstName, String lastName) {
+    private SkillBlock[] skillsBlocks;
+
+    public User() {}
+
+    public User(int dbId, String username) {
         this.dbId = dbId;
         this.username = username;
-        this.password = password;
+    }
+    
+    public User(int dbId, String username, String firstName, String lastName, Role userRole) {
+        this.dbId = dbId;
+        this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.userRole = userRole;
+    }
+
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
     }
 
     public User(String username, String password, String firstName, String lastName) {
@@ -27,7 +38,15 @@ public class User {
         this.lastName = lastName;
     }
 
-    public User(int dbId, String username, String password, String firstName, String lastName, Role userRole, ArrayList<SkillBlock> skillsBlocks) {
+    public User(String username, String password, String firstName, String lastName, Role userRole) {
+        this.username = username;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.userRole = userRole;
+    }
+
+    public User(int dbId, String username, String password, String firstName, String lastName, Role userRole, SkillBlock[] skillsBlocks) {
         this.dbId = dbId;
         this.username = username;
         this.password = password;
@@ -86,11 +105,11 @@ public class User {
         this.userRole = userRole;
     }
 
-    public ArrayList<SkillBlock> getSkillsBlocks() {
+    public SkillBlock[] getSkillsBlocks() {
         return this.skillsBlocks;
     }
 
-    public void setSkillsBlocks(ArrayList<SkillBlock> skillsBlocks) {
+    public void setSkillsBlocks(SkillBlock[] skillsBlocks) {
         this.skillsBlocks = skillsBlocks;
     }
 
