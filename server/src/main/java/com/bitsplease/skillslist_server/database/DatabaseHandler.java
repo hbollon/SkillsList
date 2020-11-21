@@ -337,6 +337,26 @@ public class DatabaseHandler {
         return -1;
     }
 
+    private User getUser(String login) {
+        String sql = "SELECT * FROM user WHERE `" + USER_DB_USERNAME + "`='" + login + "'";
+        try (ResultSet rs = statement.executeQuery(sql)) {
+            if (rs.next()) {
+                return new User(rs.getInt(1), rs.getString(2), rs.getString(5), rs.getString(6), getRoleById(rs.getInt(7)));
+            }
+            System.out.println("User not recognized!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Role getUserRole(String username) {
+        User user = getUser(username);
+        if(user == null)
+            return null;
+        return user.getUserRole();
+    }
+
     public User connectUser(String login, String password) {
         String sql = "SELECT * FROM user WHERE `" + USER_DB_USERNAME + "`='" + login + "'";
         try (ResultSet rs = statement.executeQuery(sql)) {
@@ -580,7 +600,7 @@ public class DatabaseHandler {
                 return false;    
             }
 
-            String check_existing_request = "SELECT * FROM skill WHERE `" + SKILL_DB_NAME + "`='" + skill.getSkillName() + "'";
+            String check_existing_request = "SELECT * FROM skill WHERE `" + SKILL_DB_NAME + "`='" + skill.getSkillName() + "' AND `" + SKILL_SKILLBLOCK_ID + "`='" + associatedSkillBlock.getDbId() + "'";
             try(ResultSet rs = statement.executeQuery(check_existing_request)){
                 if(rs.next()) {
                     System.out.println("Error: Skill already exists in this SkillBlock !");
@@ -609,12 +629,14 @@ public class DatabaseHandler {
         }
     }
 
-    public boolean updateSkill(Skill skill) {
+    public boolean updateSkill(String sbName, Skill skill) {
         try {
+            SkillBlock skillblock = getSkillBlock(sbName);
+
             String sql = "UPDATE " + SKILL_TABLE_NAME + " SET " + 
             SKILL_DB_NAME + "=?, " + 
             SKILL_DB_DESC + "=?, " + 
-            SKILL_AUTO_VALIDATE + "=? WHERE `" + SKILL_DB_NAME + "`='" + skill.getSkillName() + "'";
+            SKILL_AUTO_VALIDATE + "=? WHERE `" + SKILL_DB_NAME + "`='" + skill.getSkillName() + "' AND `" + SKILL_SKILLBLOCK_ID + "`='" + skillblock.getDbId() + "'";
 
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setString(1, skill.getSkillName());
@@ -635,8 +657,10 @@ public class DatabaseHandler {
         }
     }
 
-    public boolean deleteSkill(String skillname){
-        String sql = "DELETE FROM " + SKILL_TABLE_NAME + " WHERE `" + SKILL_DB_NAME + "`='" + skillname + "'";
+    public boolean deleteSkill(String sbName, String skillname){
+        SkillBlock skillblock = getSkillBlock(sbName);
+
+        String sql = "DELETE FROM " + SKILL_TABLE_NAME + " WHERE `" + SKILL_DB_NAME + "`='" + skillname + "' AND `" + SKILL_SKILLBLOCK_ID + "`='" + skillblock.getDbId() + "'";
         try {
             int result = statement.executeUpdate(sql);
             if (result > 0) {
@@ -669,6 +693,162 @@ public class DatabaseHandler {
         return output;
     }
 
+    public Skill getSkillByName(int sbId, String name) {
+        String sql = "SELECT * FROM " + SKILL_TABLE_NAME + " WHERE `" + SKILL_DB_NAME + "`='" + name + "' AND `" + SKILL_SKILLBLOCK_ID + "`='" + sbId + "'";
+        try(ResultSet rs = statement.executeQuery(sql);) {
+            if(rs.next()){
+                return new Skill(rs.getInt(1), rs.getInt(4), rs.getString(2), rs.getString(3), rs.getBoolean(5));
+            }
+            System.out.println("Requested skill doesn't exist!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return null;
+    }
+
+    public Skill getSkillById(int id) {
+        String sql = "SELECT * FROM " + SKILL_TABLE_NAME + " WHERE `id`='" + id + "'";
+        try(ResultSet rs = statement.executeQuery(sql);) {
+            if(rs.next()){
+                return new Skill(rs.getInt(1), rs.getInt(4), rs.getString(2), rs.getString(3), rs.getBoolean(5));
+            }
+            System.out.println("Requested skill doesn't exist!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return null;
+    }
+
+    public Skill[] getAllSkillOfUser(String username) {
+        String sql = "SELECT " + USER_SKILLS_SKILL_ID + " FROM " + USER_SKILLS_TABLE_NAME + " WHERE `" + USER_SKILLS_USER_ID + "`='" + getUserId(username) + "'";
+        ArrayList<Skill> userSkills = new ArrayList<Skill>();
+
+        try(Statement st = conn.createStatement(); 
+            ResultSet rs = st.executeQuery(sql)) {
+            while(rs.next()){
+                userSkills.add(getSkillById(rs.getInt(1)));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        Skill[] output = userSkills.toArray(new Skill[userSkills.size()]);
+        return output;
+    }
+
+    public boolean requestSkill(String u, String s, String sb) {
+        System.out.println("Trying to request new skill...");
+        try {
+            int userId = getUserId(u);
+            if (userId == -1) {
+                System.out.println("Error: User don't exist !");
+                return false;
+            }
+
+            SkillBlock skillblock = getSkillBlock(sb);
+            if (skillblock == null) {
+                System.out.println("Error: Skillblock don't exist !");
+                return false;
+            }
+
+            Skill skill = getSkillByName(skillblock.getDbId(), s);
+            if(skill == null) {
+                System.out.println("Error: Skill don't exist !");
+                return false;
+            }
+
+            String check_existing_request = "SELECT * FROM " + USER_SKILLS_TABLE_NAME + " WHERE `" + USER_SKILLS_USER_ID + "`='" + userId + "' AND `" + USER_SKILLS_SKILL_ID + "`='" + skill.getDbId() + "'";
+            try(ResultSet rs = statement.executeQuery(check_existing_request)){
+                if(rs.next()) {
+                    System.out.println("Error: Skill request already exists in user ones !");
+                    return false;
+                }
+            }
+
+            boolean autovalidate = skill.getAutoValidate() ? true : false;
+
+            String sql = "INSERT INTO " + USER_SKILLS_TABLE_NAME + "(`" + USER_SKILLS_USER_ID + "`, `"
+                    + USER_SKILLS_SKILL_ID + "`, `" + USER_SKILLS_SKILL_STATUS + "`) VALUES (?, ?, ?)";
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setInt(1, userId);
+            statement.setInt(2, skill.getDbId());
+            statement.setBoolean(3, autovalidate);
+
+            int result = statement.executeUpdate();
+            if (result > 0) {
+                System.out.println("A new skillblock was linked to current user successfully!");
+                return true;
+            } else {
+                System.out.println("Skillblock subscribe insert failed!");
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean validateSkill(String connectedUserName, String user, String skillblockName, String skillName) {
+        System.out.println("Trying to validate a skill...");
+        try {
+            Role connectedUser = getUserRole(connectedUserName);
+            if (connectedUser == null) {
+                System.out.println("Error: User not exist or doesn't have role !");
+                return false;
+            } else if (!connectedUser.getCanValidate()) {
+                System.out.println("Error: User role not allowed to validate skills !");
+                return false;
+            }
+
+            int userId = getUserId(user);
+            if (userId == -1) {
+                System.out.println("Error: User don't exist !");
+                return false;
+            }
+
+            SkillBlock skillblock = getSkillBlock(skillblockName);
+            if (skillblock == null) {
+                System.out.println("Error: Skillblock don't exist !");
+                return false;
+            }
+
+            Skill skill = getSkillByName(skillblock.getDbId(), skillName);
+            if(skill == null) {
+                System.out.println("Error: Skill don't exist !");
+                return false;
+            }
+
+            String check_existing_request = "SELECT * FROM " + USER_SKILLS_TABLE_NAME + " WHERE `" + USER_SKILLS_USER_ID + "`='" + userId + "' AND `" + USER_SKILLS_SKILL_ID + "`='" + skill.getDbId() + "'";
+            try(ResultSet rs = statement.executeQuery(check_existing_request)){
+                if(!rs.next()) {
+                    System.out.println("Error: Skill request don't exist in user ones !");
+                    return false;
+                }
+            }
+
+            String sql = "UPDATE " + USER_SKILLS_TABLE_NAME + " SET " + 
+            USER_SKILLS_SKILL_STATUS + "=? WHERE `" + USER_SKILLS_USER_ID + "`='" + userId + 
+            "' AND `" + USER_SKILLS_SKILL_ID + "`='" + skill.getDbId() + "'";
+
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setBoolean(1, true);
+
+            int result = statement.executeUpdate();
+            if (result > 0) {
+                System.out.println("Skill validation successed!");
+                return true;
+            } else {
+                System.out.println("Skill validation failed!");
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 
 }

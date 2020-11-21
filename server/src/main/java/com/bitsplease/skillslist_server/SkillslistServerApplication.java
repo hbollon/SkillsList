@@ -26,7 +26,12 @@ public class SkillslistServerApplication {
 		// teacherRole = db.getRole("Teacher");
 		// studentRole = db.getRole("Student");
 
+		User admin = new User("admin", "wesh", "Hugo", "Bollon", teacherRole);
+		User test = new User("test", "wesh", "Hugo", "Bollon", studentRole);
+
 		db.insertUser(new User("hbollon", "coucou", "Hugo", "Bollon", teacherRole));
+		db.insertUser(admin);
+		db.insertUser(test);
 		db.updateUser(new User("hbollon", "coucou", "Hugo", "Bollon", studentRole));
 		User currentUser = db.connectUser("hbollon", "coucou");
 
@@ -42,9 +47,12 @@ public class SkillslistServerApplication {
 		System.out.println(db.getSkillBlock("C++").toString());
 
 		db.insertSkill("Go", new Skill("COO", "ex1", true));
-		db.insertSkill("Go", new Skill("Pointeurs", "ex2", false));
-		db.updateSkill(new Skill("Pointeurs", "ex3", false));
-		db.deleteSkill("COO");
+		db.insertSkill("Go", new Skill("Pointeurs", "ex", false));
+		db.insertSkill("Go", new Skill("Modules", "ex", false));
+		db.insertSkill("C++", new Skill("COO", "ex", true));
+		db.insertSkill("C++", new Skill("Pointeurs", "ex", false));
+		db.updateSkill("Go", new Skill("Pointeurs", "ex3", false));
+		db.deleteSkill("Go", "COO");
 		Skill[] testSkills = db.getAllSkillFromSkillBlock("Go");
 		for (Skill skill : testSkills) {
 			System.out.println(skill.toString());
@@ -54,6 +62,19 @@ public class SkillslistServerApplication {
 		db.subscribeSkillBlock(currentUser.getUsername(), db.getSkillBlock("C").getBlockName());
 		db.subscribeSkillBlock(currentUser.getUsername(), db.getSkillBlock("C++").getBlockName());
 		db.unsubscribeSkillBlock(currentUser.getUsername(), db.getSkillBlock("C").getBlockName());
+
+		db.requestSkill(currentUser.getUsername(), "Pointeurs", "Go");
+		db.requestSkill(currentUser.getUsername(), "Modules", "Go");
+		db.requestSkill(currentUser.getUsername(), "Pointeurs", "C++");
+		db.requestSkill(currentUser.getUsername(), "COO", "C++");
+
+		db.validateSkill(admin.getUsername(), "hbollon", "Go", "Pointeurs");
+		db.validateSkill(test.getUsername(), "hbollon", "Go", "Modules");
+
+		Skill[] userSkills = db.getAllSkillOfUser("hbollon");
+		for (Skill skill : userSkills) {
+			System.out.println(skill.toString());
+		}
 
 		SpringApplication.run(SkillslistServerApplication.class, args);
 	}
