@@ -26,7 +26,12 @@ public class SkillslistServerApplication {
 		// teacherRole = db.getRole("Teacher");
 		// studentRole = db.getRole("Student");
 
+		User admin = new User("admin", "wesh", "Hugo", "Bollon", teacherRole);
+		User test = new User("test", "wesh", "Hugo", "Bollon", studentRole);
+
 		db.insertUser(new User("hbollon", "coucou", "Hugo", "Bollon", teacherRole));
+		db.insertUser(admin);
+		db.insertUser(test);
 		db.updateUser(new User("hbollon", "coucou", "Hugo", "Bollon", studentRole));
 		User currentUser = db.connectUser("hbollon", "coucou");
 
@@ -62,6 +67,9 @@ public class SkillslistServerApplication {
 		db.requestSkill(currentUser.getUsername(), "Modules", "Go");
 		db.requestSkill(currentUser.getUsername(), "Pointeurs", "C++");
 		db.requestSkill(currentUser.getUsername(), "COO", "C++");
+
+		db.validateSkill(admin.getUsername(), "hbollon", "Go", "Pointeurs");
+		db.validateSkill(test.getUsername(), "hbollon", "Go", "Modules");
 
 		SpringApplication.run(SkillslistServerApplication.class, args);
 	}

@@ -337,6 +337,26 @@ public class DatabaseHandler {
         return -1;
     }
 
+    private User getUser(String login) {
+        String sql = "SELECT * FROM user WHERE `" + USER_DB_USERNAME + "`='" + login + "'";
+        try (ResultSet rs = statement.executeQuery(sql)) {
+            if (rs.next()) {
+                return new User(rs.getInt(1), rs.getString(2), rs.getString(5), rs.getString(6), getRoleById(rs.getInt(7)));
+            }
+            System.out.println("User not recognized!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Role getUserRole(String username) {
+        User user = getUser(username);
+        if(user == null)
+            return null;
+        return user.getUserRole();
+    }
+
     public User connectUser(String login, String password) {
         String sql = "SELECT * FROM user WHERE `" + USER_DB_USERNAME + "`='" + login + "'";
         try (ResultSet rs = statement.executeQuery(sql)) {
@@ -731,6 +751,65 @@ public class DatabaseHandler {
                 return true;
             } else {
                 System.out.println("Skillblock subscribe insert failed!");
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean validateSkill(String connectedUserName, String user, String skillblockName, String skillName) {
+        System.out.println("Trying to validate a skill...");
+        try {
+            Role connectedUser = getUserRole(connectedUserName);
+            if (connectedUser == null) {
+                System.out.println("Error: User not exist or doesn't have role !");
+                return false;
+            } else if (!connectedUser.getCanValidate()) {
+                System.out.println("Error: User role not allowed to validate skills !");
+                return false;
+            }
+
+            int userId = getUserId(user);
+            if (userId == -1) {
+                System.out.println("Error: User don't exist !");
+                return false;
+            }
+
+            SkillBlock skillblock = getSkillBlock(skillblockName);
+            if (skillblock == null) {
+                System.out.println("Error: Skillblock don't exist !");
+                return false;
+            }
+
+            Skill skill = getSkillByName(skillblock.getDbId(), skillName);
+            if(skill == null) {
+                System.out.println("Error: Skill don't exist !");
+                return false;
+            }
+
+            String check_existing_request = "SELECT * FROM " + USER_SKILLS_TABLE_NAME + " WHERE `" + USER_SKILLS_USER_ID + "`='" + userId + "' AND `" + USER_SKILLS_SKILL_ID + "`='" + skill.getDbId() + "'";
+            try(ResultSet rs = statement.executeQuery(check_existing_request)){
+                if(!rs.next()) {
+                    System.out.println("Error: Skill request don't exist in user ones !");
+                    return false;
+                }
+            }
+
+            String sql = "UPDATE " + USER_SKILLS_TABLE_NAME + " SET " + 
+            USER_SKILLS_SKILL_STATUS + "=? WHERE `" + USER_SKILLS_USER_ID + "`='" + userId + 
+            "' AND `" + USER_SKILLS_SKILL_ID + "`='" + skill.getDbId() + "'";
+
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setBoolean(1, true);
+
+            int result = statement.executeUpdate();
+            if (result > 0) {
+                System.out.println("Skill validation successed!");
+                return true;
+            } else {
+                System.out.println("Skill validation failed!");
                 return false;
             }
         } catch (SQLException e) {
