@@ -7,21 +7,28 @@ import 'package:http/http.dart' as http;
 import 'package:skillslist/screens/login.dart';
 import 'package:sprintf/sprintf.dart';
 
-Future<bool> register(
-    String username, String password, String firstName, String lastName) async {
+Future<bool> register(String username, String password, String firstName,
+    String lastName, String role) async {
   print("Sending registering form...");
+
+  Map regRole = {
+    'roleName': role,
+  };
 
   Map regUser = {
     'username': username,
     'password': password,
     'firstName': firstName,
     'lastName': lastName,
+    'userRole': regRole,
   };
 
   final url = sprintf("http://%s:8080/register", [MyApp.ip]);
   final response = await http.post(url,
       headers: {"Content-Type": "application/json"},
       body: json.encode(regUser));
+
+  print(json.encode(regUser));
   print(response.body);
 
   var jsonResponse = json.decode(response.body);
@@ -44,16 +51,34 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
+  TextStyle style =
+      TextStyle(fontFamily: 'Montserrat', fontSize: 20.0, color: Colors.black);
   bool _buttonIsActivated = true;
   TextEditingController usernameController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
   TextEditingController firstNameController = new TextEditingController();
   TextEditingController lastNameController = new TextEditingController();
+  final formKey = GlobalKey<FormState>();
+
+  int roleValue = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(body: Builder(builder: (BuildContext context) {
+      final roleField = DropdownButton(
+          style: style,
+          value: roleValue,
+          hint: Text("Select a role"),
+          items: [
+            DropdownMenuItem(value: 0, child: Text("Student", style: style)),
+            DropdownMenuItem(value: 1, child: Text("Teacher", style: style))
+          ],
+          onChanged: (value) {
+            setState(() {
+              roleValue = value;
+            });
+          });
+
       final usernameField = TextField(
         controller: usernameController,
         obscureText: false,
@@ -120,7 +145,8 @@ class _RegisterPageState extends State<RegisterPage> {
                         usernameController.text,
                         passwordController.text,
                         firstNameController.text,
-                        lastNameController.text);
+                        lastNameController.text,
+                        (roleValue == 0) ? "Student" : "Teacher");
                     output.then((value) {
                       if (value) {
                         Scaffold.of(context).showSnackBar(SnackBar(
@@ -162,6 +188,8 @@ class _RegisterPageState extends State<RegisterPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 SizedBox(height: 45.0),
+                roleField,
+                SizedBox(height: 25.0),
                 usernameField,
                 SizedBox(height: 25.0),
                 passwordField,

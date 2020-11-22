@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:expansion_card/expansion_card.dart';
+import 'package:skillslist/main.dart';
+import 'package:skillslist/models/Skills.dart';
+import 'package:skillslist/widgets/menu_drawer.dart';
 
 import '../utils.dart';
+
+import 'package:sprintf/sprintf.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class SkillListPage extends StatefulWidget {
   double value;
@@ -17,103 +24,138 @@ class SkillListPage extends StatefulWidget {
 
 class _SkillListPageState extends State<SkillListPage> {
   double value;
-  String desc =
-      "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.";
   String title;
+  String desc = "Test";
   String imgpath;
-  List<bool> selected = List<bool>.generate(10, (index) => false);
+  List<Skill> skills = new List<Skill>();
+
+  final TextStyle textStyleSkillName = new TextStyle(
+      fontFamily: 'Montserrat',
+      color: Colors.white,
+      fontSize: 13.0,
+      fontWeight: FontWeight.bold);
+
+  final TextStyle textStyleSkillDesc = new TextStyle(
+    fontFamily: 'Montserrat',
+    color: Colors.white,
+    fontSize: 13.0,
+  );
 
   _SkillListPageState(this.value, this.title, this.imgpath);
 
+  Future<bool> fetchSkills() async {
+    final url = sprintf(
+        "http://%s:8080/getSkills?blockName=%s", [MyApp.ip, this.title]);
+
+    print(url);
+    final response = await http
+        .get(url, headers: {"Content-Type": "application/json; charset=UTF-8"});
+    print(response.body);
+
+    var jsonResponse = json.decode(response.body);
+    final data = json.decode(jsonResponse["content"]);
+
+    this.skills.clear();
+
+    for (var skill in data) {
+      String name = skill["skillName"];
+      int dbId = skill["dbId"];
+      String desc = skill["skillDesc"];
+      double value = 0.0;
+
+      Skill s = Skill(name, desc, false);
+      this.skills.add(s);
+    }
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
+    var fetch = fetchSkills();
     return MaterialApp(
-        title: 'Welcome to Flutter',
+        title: "SkillList",
         theme: ThemeData(primarySwatch: Colors.deepPurple),
         home: Scaffold(
             appBar: AppBar(
-              title: Text('Welcome to Flutter'),
+              title: Text("Skills : " + this.title),
             ),
+            drawer: MenuDrawer(),
             body: Container(
-                child:
-                    //BlockHeader(this.value, this.desc, this.title, this.imgpath),
-                    ListView.separated(
-              itemCount: 10,
-              itemBuilder: (context, index) => (index == 0)
-                  ? new BlockHeader(
-                      this.value, this.desc, this.title, this.imgpath)
-                  : ExpansionCard(
-                      background: Image.asset(
-                        "assets/test.gif",
-                        fit: BoxFit.cover,
-                      ),
-                      title: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              "Header",
-                            ),
-                            Text(
-                              "Sub",
-                            ),
-                          ],
-                        ),
-                      ),
-                      children: <Widget>[
-                        Container(
-                          margin: EdgeInsets.symmetric(horizontal: 7),
-                          child: Text(
-                            "Content goes over here !",
-                          ),
-                        )
-                      ],
-                    ),
-              separatorBuilder: (BuildContext context, int index) {
-                return SizedBox(
-                  height: 10,
-                );
-              },
-            ))));
-
-    /* new InkWell(
-                                child: ExpansionTile(
-                                    title: new Card(
-                                        color: selected[index]
-                                            ? Color(0xffc5b1e7)
-                                            : Colors.white,
-                                        shape: RoundedRectangleBorder(
-                                            side: new BorderSide(
-                                                color: selected[index]
-                                                    ? Color(0xffc5b1e7)
-                                                    : Colors.white,
-                                                width: 2.0),
-                                            borderRadius:
-                                                BorderRadius.circular(4.0)),
-                                        child: new Container(
-                                          margin: EdgeInsets.all(32.0),
-                                          child: Row(
+                child: FutureBuilder(
+                    future: fetch,
+                    builder:
+                        (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                      Widget lv;
+                      if (snapshot.hasData) {
+                        print(this.skills.length);
+                        lv = ListView.builder(
+                          itemCount: this.skills.length + 1,
+                          itemBuilder: (BuildContext context, int index) {
+                            Skill skill;
+                            if (index > 0) {
+                              skill = this.skills.elementAt(index - 1);
+                            }
+                            return (index == 0)
+                                ? new BlockHeader(this.value, this.desc,
+                                    this.title, this.imgpath)
+                                : Card(
+                                    color: new Color(0xFF333366),
+                                    margin: EdgeInsets.all(6.0),
+                                    child: Padding(
+                                      padding: EdgeInsets.only(
+                                          top: 8.0, right: 8.0, bottom: 8.0),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          ListTile(
+                                            leading: Icon(Icons.star,
+                                                color: Colors.white),
+                                            title: Text(
+                                              skill.name,
+                                              style: this.textStyleSkillName,
+                                            ),
+                                          ),
+                                          ExpansionTile(
+                                            title: Text("See more details",
+                                                style: this.textStyleSkillName),
                                             children: [
-                                              Text("Skill"),
-                                              Checkbox(
-                                                  value: selected[index],
-                                                  onChanged: (bool newValue) {
-                                                    setState(() {
-                                                      selected[index] =
-                                                          newValue;
-                                                    });
-                                                  }),
+                                              Padding(
+                                                  padding: EdgeInsets.only(
+                                                      top: 20.0,
+                                                      bottom: 20.0,
+                                                      left: 4.0,
+                                                      right: 4.0),
+                                                  child: Text(
+                                                    skill.desc,
+                                                    style:
+                                                        this.textStyleSkillDesc,
+                                                  ))
                                             ],
                                           ),
-                                        ))),
-                                onTap: () {
-                                  setState(() {
-                                    selected[index] = !selected[index];
-                                  });
-                                },
-                                splashColor: Colors.deepPurpleAccent,
-                              ) */
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: <Widget>[
+                                              Text(
+                                                "Mark as obtained",
+                                                style: this.textStyleSkillDesc,
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Switch(
+                                                  value: false, onChanged: null)
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ));
+                          },
+                        );
+                      } else {
+                        lv = new BlockHeader(
+                            this.value, this.desc, this.title, this.imgpath);
+                      }
+                      return lv;
+                    }))));
   }
 }
 
@@ -154,6 +196,7 @@ class _BlockHeaderState extends State<BlockHeader> {
 
   @override
   Widget build(BuildContext context) {
+    Container blockThumbnail;
     final blockProgressBar = new Container(
         margin: new EdgeInsets.only(
             left: 28.0, right: 28.0, bottom: 20.0, top: 10.0),
@@ -181,16 +224,17 @@ class _BlockHeaderState extends State<BlockHeader> {
         margin: new EdgeInsets.symmetric(horizontal: 16.0),
         alignment: FractionalOffset.center,
         child: new Text(this.desc, style: this.styleDesc));
-
-    final blockThumbnail = new Container(
-      margin: new EdgeInsets.symmetric(horizontal: 12.0),
-      alignment: FractionalOffset.centerLeft,
-      child: new Image(
-        image: new AssetImage(this.imgpath),
-        height: 96.0,
-        width: 96.0,
-      ),
-    );
+    if (this.imgpath != null) {
+      blockThumbnail = new Container(
+        margin: new EdgeInsets.symmetric(horizontal: 12.0),
+        alignment: FractionalOffset.centerLeft,
+        child: new Image(
+          image: new AssetImage(this.imgpath),
+          height: 96.0,
+          width: 96.0,
+        ),
+      );
+    }
 
     final blockTitle = new Container(
         margin: new EdgeInsets.symmetric(horizontal: 16.0),
@@ -200,42 +244,81 @@ class _BlockHeaderState extends State<BlockHeader> {
           style: this.styleTitle,
         ));
 
-    return new Container(
-      margin: new EdgeInsets.all(6.0),
-      height: 180.0,
-      decoration: new BoxDecoration(
-        color: new Color(0xFF333366),
-        shape: BoxShape.rectangle,
-        borderRadius: new BorderRadius.circular(8.0),
-        boxShadow: <BoxShadow>[
-          new BoxShadow(
-            color: Colors.black12,
-            blurRadius: 10.0,
-            offset: new Offset(0.0, 10.0),
-          ),
-        ],
-      ),
-      child: new Column(
-        children: <Widget>[
-          new Expanded(
-              child: new Container(
-            child: new Row(
-              children: [
-                blockThumbnail,
-                new Expanded(
-                  child: blockTitle,
-                ),
-              ],
-              mainAxisAlignment:
-                  MainAxisAlignment.center, //Center Row contents horizontally,
-              crossAxisAlignment:
-                  CrossAxisAlignment.center, //Center Row contents vertically,
+    if (this.imgpath != null) {
+      return new Container(
+        margin: new EdgeInsets.all(6.0),
+        height: 180.0,
+        decoration: new BoxDecoration(
+          color: new Color(0xFF333366),
+          shape: BoxShape.rectangle,
+          borderRadius: new BorderRadius.circular(8.0),
+          boxShadow: <BoxShadow>[
+            new BoxShadow(
+              color: Colors.black12,
+              blurRadius: 10.0,
+              offset: new Offset(0.0, 10.0),
             ),
-            margin: EdgeInsets.symmetric(horizontal: 12.0),
-          )),
-          blockProgressBar
-        ],
-      ),
-    );
+          ],
+        ),
+        child: new Column(
+          children: <Widget>[
+            new Expanded(
+                child: new Container(
+              child: new Row(
+                children: [
+                  blockThumbnail,
+                  new Expanded(
+                    child: blockTitle,
+                  ),
+                ],
+                mainAxisAlignment: MainAxisAlignment
+                    .center, //Center Row contents horizontally,
+                crossAxisAlignment:
+                    CrossAxisAlignment.center, //Center Row contents vertically,
+              ),
+              margin: EdgeInsets.symmetric(horizontal: 12.0),
+            )),
+            blockProgressBar
+          ],
+        ),
+      );
+    } else {
+      return new Container(
+        margin: new EdgeInsets.all(6.0),
+        height: 180.0,
+        decoration: new BoxDecoration(
+          color: new Color(0xFF333366),
+          shape: BoxShape.rectangle,
+          borderRadius: new BorderRadius.circular(8.0),
+          boxShadow: <BoxShadow>[
+            new BoxShadow(
+              color: Colors.black12,
+              blurRadius: 10.0,
+              offset: new Offset(0.0, 10.0),
+            ),
+          ],
+        ),
+        child: new Column(
+          children: <Widget>[
+            new Expanded(
+                child: new Container(
+              child: new Row(
+                children: [
+                  new Expanded(
+                    child: blockTitle,
+                  ),
+                ],
+                mainAxisAlignment: MainAxisAlignment
+                    .center, //Center Row contents horizontally,
+                crossAxisAlignment:
+                    CrossAxisAlignment.center, //Center Row contents vertically,
+              ),
+              margin: EdgeInsets.symmetric(horizontal: 12.0),
+            )),
+            blockProgressBar
+          ],
+        ),
+      );
+    }
   }
 }

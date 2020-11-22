@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:skillslist/screens/skill_block_list.dart';
 
 class MenuDrawer extends StatelessWidget {
   const MenuDrawer({Key key}) : super(key: key);
@@ -19,7 +20,17 @@ class MenuDrawer extends StatelessWidget {
                 style: style,
               )),
           ListTile(leading: Icon(Icons.person), title: Text("Profile")),
-          ListTile(leading: Icon(Icons.stars), title: Text("Trophies"))
+          ListTile(
+            leading: Icon(Icons.list),
+            title: Text("Your Skills"),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => SkillBlockList()));
+            },
+          ),
+          ListTile(leading: Icon(Icons.stars), title: Text("Achievements")),
+          ListTile(leading: Icon(Icons.exit_to_app), title: Text("Logout"))
         ],
       ),
     ));

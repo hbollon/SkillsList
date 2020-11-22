@@ -88,6 +88,7 @@ class _LoginPageState extends State<LoginPage> {
                     login(usernameController.text, passwordController.text);
                 output.then((value) {
                   if (value) {
+                    Navigator.pop(context);
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => SkillBlockList()),

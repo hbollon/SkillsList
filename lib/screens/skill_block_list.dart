@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:skillslist/main.dart';
-import 'package:skillslist/models/SkillBlock.dart';
+import 'package:skillslist/models/Skills.dart';
+import 'package:skillslist/models/User.dart';
+import 'package:skillslist/screens/skill_market.dart';
 import 'package:skillslist/widgets/menu_drawer.dart';
 import 'package:skillslist/widgets/skill_block_row.dart';
 
@@ -25,7 +27,8 @@ class _SkillBlockListState extends State<SkillBlockList> {
   Future<bool> fetchUserSkillBlocks() async {
     print("Fetching Skill Blocks...");
 
-    final url = sprintf("http://%s:8080/getAllSkillBlocks", [MyApp.ip]);
+    final url = sprintf("http://%s:8080/getSubscribedSkillBlock?userId=%s",
+        [MyApp.ip, User.loggedInUser.dbId]);
     final response = await http.get(url, headers: {"Content-Type": "text"});
     print(response.body);
 
@@ -77,7 +80,16 @@ class _SkillBlockListState extends State<SkillBlockList> {
                 return lv;
               }),
           floatingActionButton: FloatingActionButton(
-              onPressed: () {},
+              onPressed: () {
+                List<int> ids = new List();
+                for (var i in skillblocks) {
+                  ids.add(i.sbId);
+                }
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => SkillMarketPage(ids)));
+              },
               child: Icon(Icons.add),
               backgroundColor: Colors.deepPurple)),
     );

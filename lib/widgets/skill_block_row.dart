@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:skillslist/models/SkillBlock.dart';
+import 'package:skillslist/models/Skills.dart';
 import 'package:skillslist/widgets/skill_list.dart';
 
 import '../utils.dart';

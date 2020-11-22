@@ -11,3 +11,15 @@ class SkillBlock {
     this.sbId = sbId;
   }
 }
+
+class Skill {
+  bool obtained;
+  String name;
+  String desc;
+
+  Skill(String name, String desc, bool obtained) {
+    this.name = name;
+    this.desc = desc;
+    this.obtained = obtained;
+  }
+}
