@@ -676,6 +676,25 @@ public class DatabaseHandler {
         }
     }
 
+    public boolean deleteSkill(String sbName, Skill skill){
+        SkillBlock skillblock = getSkillBlock(sbName);
+
+        String sql = "DELETE FROM " + SKILL_TABLE_NAME + " WHERE `" + SKILL_DB_NAME + "`='" + skill.getSkillName() + "' AND `" + SKILL_SKILLBLOCK_ID + "`='" + skillblock.getDbId() + "'";
+        try {
+            int result = statement.executeUpdate(sql);
+            if (result > 0) {
+                System.out.println("The skill was deleted successfully!");
+                return true;
+            } else {
+                System.out.println("Skill delete failed!");
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public Skill[] getAllSkillFromSkillBlock(String skillblockname) {
         SkillBlock skillBlock = getSkillBlock(skillblockname);
         String sql = "SELECT * FROM " + SKILL_TABLE_NAME + " WHERE " + SKILL_SKILLBLOCK_ID + "=" + skillBlock.getDbId();
