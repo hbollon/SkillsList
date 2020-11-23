@@ -76,6 +76,13 @@ public class SkillslistServerApplication {
 			System.out.println(skill.toString());
 		}
 
+		System.out.println();
+
+		Skill[] userSkillsSb = db.getAllSkillOfUserBySkillblock("hbollon", "Go");
+		for (Skill skill : userSkillsSb) {
+			System.out.println(skill.toString());
+		}
+
 		SpringApplication.run(SkillslistServerApplication.class, args);
 	}
 }
