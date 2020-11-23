@@ -3,9 +3,11 @@ package com.bitsplease.skillslist_server.restservice.controller;
 import com.bitsplease.skillslist_server.SkillslistServerApplication;
 import com.bitsplease.skillslist_server.data.Skill;
 import com.bitsplease.skillslist_server.restservice.Response;
+import com.bitsplease.skillslist_server.restservice.ResponseBool;
 import com.bitsplease.skillslist_server.restservice.SuccessState;
 import com.bitsplease.skillslist_server.restservice.model.SkillCrud;
 import com.bitsplease.skillslist_server.restservice.model.SkillRequest;
+import com.bitsplease.skillslist_server.restservice.model.SkillUser;
 import com.bitsplease.skillslist_server.restservice.model.SkillValidation;
 import com.google.gson.Gson;
 
@@ -103,6 +105,20 @@ public class SkillController {
         } else {
             return new SuccessState(counter.incrementAndGet(), false);
         }
+    }
+
+    @PostMapping(path = "/isValidated", consumes = "application/json", produces = "application/json")
+    public ResponseBool isValidated(
+        @RequestBody SkillUser request) 
+    {
+        try {
+            boolean res = SkillslistServerApplication.db.checkSkillValidation(request.username, request.skill);
+            return new ResponseBool(counter.incrementAndGet(), res, false);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseBool(counter.incrementAndGet(), false, true);
+        }
+        
     }
 
     @PutMapping(path = "/updateSkill", consumes = "application/json", produces = "application/json")

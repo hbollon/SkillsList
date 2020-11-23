@@ -83,6 +83,17 @@ public class SkillslistServerApplication {
 			System.out.println(skill.toString());
 		}
 
+		System.out.println();
+
+		Skill[] testValidateSkills = db.getAllSkillOfUser("hbollon");
+		for (Skill skill : testValidateSkills) {
+			try{
+				System.out.println(db.checkSkillValidation("hbollon", skill));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
 		SpringApplication.run(SkillslistServerApplication.class, args);
 	}
 }

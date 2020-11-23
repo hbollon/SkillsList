@@ -789,6 +789,21 @@ public class DatabaseHandler {
         return output;
     }
 
+    public boolean checkSkillValidation(String username, Skill skill) {
+        String sql = "SELECT " + USER_SKILLS_SKILL_STATUS + " FROM " + USER_SKILLS_TABLE_NAME + " WHERE `" + USER_SKILLS_SKILL_ID + "`='" + skill.getDbId() + "' AND `" + USER_SKILLS_USER_ID + "`='" + getUserId(username) + "'";
+        try(Statement st = conn.createStatement(); 
+            ResultSet rs = st.executeQuery(sql)) {
+            if(rs.next()){
+                return rs.getInt(1) == 1 ? true : false;
+            } else {
+                throw new IllegalArgumentException();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException();
+        }
+    }
+
     public boolean requestSkill(String u, String s, String sb) {
         System.out.println("Trying to request new skill...");
         try {
