@@ -30,6 +30,9 @@ public class SkillslistServerApplication {
 		User test = new User("test", "wesh", "Hugo", "Bollon", studentRole);
 
 		db.insertUser(new User("hbollon", "coucou", "Hugo", "Bollon", teacherRole));
+		db.insertUser(new User("user1", "password", "", "", studentRole));
+		db.insertUser(new User("user2", "password", "", "", studentRole));
+		db.insertUser(new User("user3", "password", "", "", studentRole));
 		db.insertUser(admin);
 		db.insertUser(test);
 		db.updateUser(new User("hbollon", "coucou", "Hugo", "Bollon", studentRole));
@@ -107,6 +110,11 @@ public class SkillslistServerApplication {
 		Skill[] allSkillsSbByUser = db.getAllSkillOfSkillblockByUser("hbollon", "JS");
 		for (Skill skill : allSkillsSbByUser) {
 			System.out.println(skill.toString());
+		}
+
+		User[] students = db.getAllUserWithRole(new Role(2));
+		for (User user : students) {
+			System.out.println(user.toString());
 		}
 
 		SpringApplication.run(SkillslistServerApplication.class, args);

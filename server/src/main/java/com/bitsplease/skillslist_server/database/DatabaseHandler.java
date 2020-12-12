@@ -350,6 +350,24 @@ public class DatabaseHandler {
         return null;
     }
 
+    public User[] getAllUserWithRole(Role role) {
+        ArrayList<User> students = new ArrayList<User>();
+        if(role.getRoleName() != null && role.getDbId() == 0)
+            role = getRole(role.getRoleName());
+
+        String sql = "SELECT * FROM user WHERE `" + USER_DB_ROLE + "`='" + role.getDbId() + "'";
+        try (Statement st = conn.createStatement(); 
+             ResultSet rs = st.executeQuery(sql)) {
+            while(rs.next()) {
+                students.add(new User(rs.getInt(1), rs.getString(2), rs.getString(5), rs.getString(6), getRoleById(rs.getInt(7))));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return students.toArray(new User[students.size()]);
+    }
+
     public Role getUserRole(String username) {
         User user = getUser(username);
         if(user == null)
