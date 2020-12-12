@@ -27,17 +27,21 @@ public class SkillslistServerApplication {
 		// studentRole = db.getRole("Student");
 
 		User admin = new User("admin", "wesh", "Hugo", "Bollon", teacherRole);
-		User test = new User("test", "wesh", "Hugo", "Bollon", studentRole);
 
 		db.insertUser(new User("hbollon", "coucou", "Hugo", "Bollon", teacherRole));
 		db.insertUser(admin);
-		db.insertUser(test);
 		db.updateUser(new User("hbollon", "coucou", "Hugo", "Bollon", studentRole));
 		User currentUser = db.connectUser("hbollon", "coucou");
 
 		db.insertSkillBlock(new SkillBlock("Cpp", "Your skill in this language"));
 		db.insertSkillBlock(new SkillBlock("Go", "Your skill in this language"));
 		db.insertSkillBlock(new SkillBlock("C", "Your skill in this language"));
+
+		db.insertSkillBlock(new SkillBlock("JS", "Your skill in this language"), new Skill[]{
+			new Skill("Threads", "", false),
+			new Skill("VueJS", "", true),
+			new Skill("Lambda functions", "", false)
+		});
 
 		SkillBlock[] testSkillBlocks = db.getAllSkillBlock();
 		for (SkillBlock skillBlock : testSkillBlocks) {
@@ -63,17 +67,39 @@ public class SkillslistServerApplication {
 		db.subscribeSkillBlock(currentUser.getUsername(), db.getSkillBlock("Cpp").getBlockName());
 		db.unsubscribeSkillBlock(currentUser.getUsername(), db.getSkillBlock("C").getBlockName());
 
-		db.requestSkill(currentUser.getUsername(), "Pointeurs", "Go");
-		db.requestSkill(currentUser.getUsername(), "Modules", "Go");
-		db.requestSkill(currentUser.getUsername(), "Pointeurs", "Cpp");
-		db.requestSkill(currentUser.getUsername(), "COO", "Cpp");
-
-		db.validateSkill(admin.getUsername(), "hbollon", "Go", "Pointeurs");
-		db.validateSkill(test.getUsername(), "hbollon", "Go", "Modules");
+		db.requestSkill("hbollon", "Pointeurs", "Go");
 
 		Skill[] userSkills = db.getAllSkillOfUser("hbollon");
 		for (Skill skill : userSkills) {
 			System.out.println(skill.toString());
+		}
+
+		System.out.println();
+
+		Skill[] userSkillsSb = db.getAllSkillOfUserBySkillblock("hbollon", "Go");
+		for (Skill skill : userSkillsSb) {
+			System.out.println(skill.toString());
+		}
+
+		System.out.println();
+
+		Skill[] testValidateSkills = db.getAllSkillOfUser("hbollon");
+		for (Skill skill : testValidateSkills) {
+			try{
+				System.out.println(db.checkSkillValidation("hbollon", skill));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		Skill[] allSkillsSbByUser = db.getAllSkillOfSkillblockByUser("hbollon", "JS");
+		for (Skill skill : allSkillsSbByUser) {
+			System.out.println(skill.toString());
+		}
+
+		User[] students = db.getAllUserWithRole(new Role(2));
+		for (User user : students) {
+			System.out.println(user.toString());
 		}
 
 		SpringApplication.run(SkillslistServerApplication.class, args);

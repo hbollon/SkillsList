@@ -4,7 +4,9 @@ import 'package:skillslist/main.dart';
 import 'package:skillslist/models/Skills.dart';
 import 'package:skillslist/widgets/menu_drawer.dart';
 
-import '../utils.dart';
+import 'package:skillslist/models/User.dart';
+
+import 'package:skillslist/utils.dart';
 
 import 'package:sprintf/sprintf.dart';
 import 'dart:convert';
@@ -22,12 +24,30 @@ class SkillListPage extends StatefulWidget {
       _SkillListPageState(value, title, imgpath);
 }
 
+String getStringFromValidation(int val) {
+  if (val == -1)
+    return "Ask for validation";
+  else if (val == 0) return "Pending";
+  return "Validated";
+}
+
+Color getColorFromValidation(int val) {
+  if (val == 1) return Colors.green;
+  return Colors.yellow;
+}
+
+Color getColor2FromValidation(int val) {
+  if (val == 1) return Colors.lightGreenAccent;
+  return Colors.yellowAccent;
+}
+
 class _SkillListPageState extends State<SkillListPage> {
   double value;
   String title;
   String desc = "Test";
   String imgpath;
   List<Skill> skills = new List<Skill>();
+  List<bool> switchStates = new List<bool>();
 
   final TextStyle textStyleSkillName = new TextStyle(
       fontFamily: 'Montserrat',
@@ -45,7 +65,8 @@ class _SkillListPageState extends State<SkillListPage> {
 
   Future<bool> fetchSkills() async {
     final url = sprintf(
-        "http://%s:8080/getSkills?blockName=%s", [MyApp.ip, this.title]);
+        "http://%s:8080/getAllSkillOfSkillblockByUser?username=%s&skillblockName=%s",
+        [MyApp.ip, User.loggedInUser.username, this.title]);
 
     print(url);
     final response = await http
@@ -56,16 +77,44 @@ class _SkillListPageState extends State<SkillListPage> {
     final data = json.decode(jsonResponse["content"]);
 
     this.skills.clear();
+    int nbVal = 0;
 
     for (var skill in data) {
       String name = skill["skillName"];
       int dbId = skill["dbId"];
       String desc = skill["skillDesc"];
-      double value = 0.0;
+      int validate = skill["validate"];
 
-      Skill s = Skill(name, desc, false);
+      Skill s = Skill(name, desc, validate);
+      if (validate == 1) {
+        ++nbVal;
+      }
       this.skills.add(s);
+      this.switchStates.add(validate >= 0);
     }
+    this.value = nbVal / this.skills.length;
+    print("Value : " + this.value.toString());
+    return true;
+  }
+
+  Future<bool> requestSkillUpdate(Skill skill, bool validated) async {
+    String url;
+    if (validated) {
+      url = sprintf("http://%s:8080/requestSkill", [MyApp.ip]);
+
+      Map map = {
+        'username': User.loggedInUser.username,
+        'skillName': skill.name,
+        'skillblockName': this.title,
+      };
+
+      print(url);
+      final response = await http.post(url,
+          headers: {"Content-Type": "application/json; charset=UTF-8"},
+          body: json.encode(map));
+      print(response.body);
+    }
+
     return true;
   }
 
@@ -137,12 +186,32 @@ class _SkillListPageState extends State<SkillListPage> {
                                                 MainAxisAlignment.end,
                                             children: <Widget>[
                                               Text(
-                                                "Mark as obtained",
+                                                getStringFromValidation(
+                                                    skill.validation),
                                                 style: this.textStyleSkillDesc,
                                               ),
                                               const SizedBox(width: 8),
                                               Switch(
-                                                  value: false, onChanged: null)
+                                                value: this
+                                                    .switchStates
+                                                    .elementAt(index - 1),
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    this.switchStates[
+                                                        index - 1] = value;
+
+                                                    // MAKE THE REQUEST
+                                                    requestSkillUpdate(
+                                                        skill, value);
+                                                  });
+                                                },
+                                                activeColor:
+                                                    getColorFromValidation(
+                                                        skill.validation),
+                                                activeTrackColor:
+                                                    getColor2FromValidation(
+                                                        skill.validation),
+                                              )
                                             ],
                                           ),
                                         ],

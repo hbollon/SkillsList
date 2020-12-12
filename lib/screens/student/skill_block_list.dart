@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:skillslist/main.dart';
 import 'package:skillslist/models/Skills.dart';
 import 'package:skillslist/models/User.dart';
-import 'package:skillslist/screens/skill_market.dart';
+import 'package:skillslist/screens/student/skill_market.dart';
 import 'package:skillslist/widgets/menu_drawer.dart';
 import 'package:skillslist/widgets/skill_block_row.dart';
 
@@ -49,6 +49,12 @@ class _SkillBlockListState extends State<SkillBlockList> {
     return true;
   }
 
+  Future<void> getRemoteData() async {
+    setState(() {
+      fetchUserSkillBlocks();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     TextStyle style = TextStyle(
@@ -67,15 +73,17 @@ class _SkillBlockListState extends State<SkillBlockList> {
               builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
                 Widget lv;
                 if (snapshot.hasData) {
-                  lv = ListView.builder(
-                    itemCount: this.skillblocks.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return SkillBlockRow.from(
-                          this.skillblocks.elementAt(index));
-                    },
-                  );
+                  lv = RefreshIndicator(
+                      child: ListView.builder(
+                        itemCount: this.skillblocks.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return SkillBlockRow.from(
+                              this.skillblocks.elementAt(index), false);
+                        },
+                      ),
+                      onRefresh: getRemoteData);
                 } else {
-                  lv = Text("Fetching skill blocks...");
+                  lv = Center(child: CircularProgressIndicator());
                 }
                 return lv;
               }),

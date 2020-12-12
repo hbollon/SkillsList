@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:skillslist/main.dart';
 import 'package:skillslist/models/User.dart';
 import 'package:skillslist/screens/register.dart';
-import 'package:skillslist/screens/skill_block_list.dart';
+import 'package:skillslist/screens/student/skill_block_list.dart';
+import 'package:skillslist/screens/teacher/skill_block_list_teacher.dart';
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -28,8 +29,15 @@ Future<bool> login(String username, String password) async {
     return false;
   } else {
     final userData = json.decode(jsonResponse["content"]);
+    UserRole role = new UserRole(
+        userData["userRole"]["roleName"],
+        userData["userRole"]["canValidate"],
+        userData["userRole"]["canAddSkill"]);
+    print(role.name);
+    print(role.canValidate);
+    print(role.canAddSkill);
     User.loggedInUser = new User(userData["dbId"], userData["username"],
-        userData["firstName"], userData["lastName"]);
+        userData["firstName"], userData["lastName"], role);
     print("Successfully logged in!");
     return true;
   }
@@ -89,10 +97,19 @@ class _LoginPageState extends State<LoginPage> {
                 output.then((value) {
                   if (value) {
                     Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SkillBlockList()),
-                    );
+                    if (User.loggedInUser.role.name == "Student") {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SkillBlockList()),
+                      );
+                    } else if (User.loggedInUser.role.name == "Teacher") {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SkillBlockListTeacher()),
+                      );
+                    }
                   } else {
                     Scaffold.of(context).showSnackBar(SnackBar(
                       content: Text(

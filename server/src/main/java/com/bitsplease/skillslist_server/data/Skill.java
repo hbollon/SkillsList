@@ -8,6 +8,7 @@ public class Skill {
     private String skillDesc;
     private int skillblockId;
     private boolean autoValidate;
+    private int validate = -1;
 
     public Skill() {
     }
@@ -31,6 +32,15 @@ public class Skill {
         this.skillblockId = skillblockId;
         this.dbId = dbId;
         this.autoValidate = autoValidate;
+    }
+
+    public Skill(int dbId, int skillblockId, String skillName, String skillDesc, boolean autoValidate, int validate) {
+        this.skillName = skillName;
+        this.skillDesc = skillDesc;
+        this.skillblockId = skillblockId;
+        this.dbId = dbId;
+        this.autoValidate = autoValidate;
+        this.validate = validate;
     }
 
     public int getDbId() {
@@ -73,6 +83,13 @@ public class Skill {
         this.autoValidate = autoValidate;
     }
 
+    public int getValidate() {
+        return this.validate;
+    }
+
+    public void setValidate(int validate) {
+        this.validate = validate;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -87,7 +104,7 @@ public class Skill {
 
     @Override
     public int hashCode() {
-        return Objects.hash(dbId, skillName, skillDesc, skillblockId, autoValidate);
+        return Objects.hash(dbId, skillName, skillDesc, skillblockId, autoValidate, validate);
     }
 
     @Override
@@ -98,6 +115,7 @@ public class Skill {
             ", skillDesc='" + getSkillDesc() + "'" +
             ", skillblockId='" + getSkillblockId() + "'" +
             ", autoValidate='" + getAutoValidate() + "'" +
+            ", validate='" + getValidate() + "'" +
             "}";
     }
 

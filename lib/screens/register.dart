@@ -37,8 +37,6 @@ Future<bool> register(String username, String password, String firstName,
     return false;
   } else {
     final userData = json.decode(jsonResponse["content"]);
-    User.loggedInUser = new User(userData["dbId"], userData["username"],
-        userData["firstName"], userData["lastName"]);
     print("Successfully registered!");
     return true;
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:skillslist/models/Skills.dart';
-import 'package:skillslist/widgets/skill_list.dart';
+import 'package:skillslist/screens/student/skill_list.dart';
+import 'package:skillslist/screens/teacher/skill_list_teacher.dart';
 
 import '../utils.dart';
 
@@ -8,15 +9,18 @@ class SkillBlockRow extends StatelessWidget {
   SkillBlockRow(this.title, this.imgPath, this.value, {Key key})
       : super(key: key);
 
-  SkillBlockRow.from(SkillBlock sb, {Key key}) : super(key: key) {
+  SkillBlockRow.from(SkillBlock sb, bool teacherMode, {Key key})
+      : super(key: key) {
     this.imgPath = null;
     this.title = sb.name;
     this.value = sb.value;
+    this.teacherMode = teacherMode;
   }
 
   String imgPath;
   String title;
   double value;
+  bool teacherMode;
 
   final TextStyle style = TextStyle(
       fontFamily: 'Montserrat',
@@ -73,7 +77,7 @@ class SkillBlockRow extends StatelessWidget {
         ],
       ),
     );
-    if (this.imgPath != null) {
+    if (this.imgPath == null) {
       return new GestureDetector(
         child: Container(
             height: 120.0,
@@ -82,19 +86,24 @@ class SkillBlockRow extends StatelessWidget {
               horizontal: 24.0,
             ),
             child: new Stack(
-              children: <Widget>[
-                blockCard,
-                blockThumbnail,
-                blockTitle,
-                blockProgress,
-              ],
+              children: (teacherMode)
+                  ? <Widget>[
+                      blockCard,
+                      blockTitle,
+                    ]
+                  : <Widget>[
+                      blockCard,
+                      blockTitle,
+                      blockProgress,
+                    ],
             )),
         onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) =>
-                    SkillListPage(this.value, this.title, this.imgPath)),
+                builder: (context) => (teacherMode)
+                    ? SkillListTeacherPage(this.value, this.title, this.imgPath)
+                    : SkillListPage(this.value, this.title, this.imgPath)),
           );
         },
       );

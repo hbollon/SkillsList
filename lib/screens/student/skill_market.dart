@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:skillslist/main.dart';
 import 'package:skillslist/models/Skills.dart';
+import 'package:skillslist/models/User.dart';
 import 'package:skillslist/widgets/menu_drawer.dart';
 import 'package:skillslist/widgets/skill_block_row.dart';
 
-import '../utils.dart';
+import 'package:skillslist/utils.dart';
 
 import 'package:sprintf/sprintf.dart';
 import 'dart:convert';
@@ -24,6 +25,7 @@ class SkillMarketPage extends StatefulWidget {
 class _SkillMarketPageState extends State<SkillMarketPage> {
   List<SkillBlock> skillblocks = new List<SkillBlock>();
   List<int> subscribed;
+  List<bool> switches = new List<bool>();
 
   final TextStyle textStyleSkillBlockName = new TextStyle(
       fontFamily: 'Montserrat',
@@ -38,6 +40,26 @@ class _SkillMarketPageState extends State<SkillMarketPage> {
   );
 
   _SkillMarketPageState(this.subscribed);
+
+  Future<bool> subscriptionRequest(String sb, bool value) async {
+    String url;
+    if (value) {
+      url = sprintf("http://%s:8080/subscribe", [MyApp.ip]);
+    } else {
+      url = sprintf("http://%s:8080/unsubscribe", [MyApp.ip]);
+    }
+    Map pair = {
+      "first": User.loggedInUser.username,
+      "second": sb,
+    };
+    final response = await http.post(url,
+        headers: {"Content-Type": "application/json; charset=UTF-8"},
+        body: json.encode(pair));
+
+    print(response.body);
+
+    return true;
+  }
 
   Future<bool> fetchSkillBlocks() async {
     final url = sprintf("http://%s:8080/getAllSkillBlocks", [MyApp.ip]);
@@ -81,6 +103,13 @@ class _SkillMarketPageState extends State<SkillMarketPage> {
                         (BuildContext context, AsyncSnapshot<bool> snapshot) {
                       Widget lv;
                       if (snapshot.hasData) {
+                        for (var sb in skillblocks) {
+                          if (subscribed.contains(sb.sbId)) {
+                            switches.add(true);
+                          } else {
+                            switches.add(false);
+                          }
+                        }
                         lv = ListView.builder(
                           itemCount: this.skillblocks.length,
                           itemBuilder: (BuildContext context, int index) {
@@ -96,7 +125,7 @@ class _SkillMarketPageState extends State<SkillMarketPage> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: <Widget>[
                                       ListTile(
-                                        leading: Icon(Icons.star,
+                                        leading: Icon(Icons.list,
                                             color: Colors.white),
                                         title: Text(
                                           skillblock.name,
@@ -130,10 +159,17 @@ class _SkillMarketPageState extends State<SkillMarketPage> {
                                           ),
                                           const SizedBox(width: 8),
                                           Switch(
-                                              value: this
-                                                  .subscribed
-                                                  .contains(skillblock.sbId),
-                                              onChanged: null)
+                                              value: switches.elementAt(index),
+                                              activeTrackColor:
+                                                  Colors.lightGreenAccent,
+                                              activeColor: Colors.green,
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  this.switches[index] = value;
+                                                  subscriptionRequest(
+                                                      skillblock.name, value);
+                                                });
+                                              })
                                         ],
                                       ),
                                     ],
@@ -142,7 +178,7 @@ class _SkillMarketPageState extends State<SkillMarketPage> {
                           },
                         );
                       } else {
-                        lv = Text("Loading Skill blocks...");
+                        lv = Center(child: CircularProgressIndicator());
                       }
                       return lv;
                     }))));

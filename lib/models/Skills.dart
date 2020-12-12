@@ -13,13 +13,21 @@ class SkillBlock {
 }
 
 class Skill {
-  bool obtained;
+  int validation;
   String name;
   String desc;
 
-  Skill(String name, String desc, bool obtained) {
+  String block;
+
+  Skill(String name, String desc, int validation) {
     this.name = name;
     this.desc = desc;
-    this.obtained = obtained;
+    this.validation = validation;
+  }
+
+  Skill.bis(String name, String desc, String block) {
+    this.name = name;
+    this.desc = desc;
+    this.block = block;
   }
 }
