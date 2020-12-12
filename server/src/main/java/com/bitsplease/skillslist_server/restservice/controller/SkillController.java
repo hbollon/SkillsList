@@ -71,6 +71,22 @@ public class SkillController {
         }
     }
 
+    @GetMapping("/getAllSkillOfSkillblockByUser")
+    public Response getAllSkillOfSkillblockByUser(
+        @RequestParam(value = "username") String username,
+        @RequestParam(value = "skillblockName") String skillblockName
+    )
+    {
+        Skill[] skills = SkillslistServerApplication.db.getAllSkillOfSkillblockByUser(username, skillblockName);
+        if(skills != null && skills.length > 0) {
+            Gson gson = new Gson();
+            String contentJson = gson.toJson(skills);
+            return new Response(counter.incrementAndGet(), contentJson);
+        } else {
+            return new Response(counter.incrementAndGet(), "");
+        }
+    }
+
     @PostMapping(path = "/addSkill", consumes = "application/json", produces = "application/json")
     public SuccessState addSkill(
         @RequestBody SkillCrud request) 

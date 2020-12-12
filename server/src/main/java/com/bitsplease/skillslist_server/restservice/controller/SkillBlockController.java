@@ -2,12 +2,10 @@ package com.bitsplease.skillslist_server.restservice.controller;
 
 import com.bitsplease.skillslist_server.SkillslistServerApplication;
 import com.bitsplease.skillslist_server.data.SkillBlock;
-import com.bitsplease.skillslist_server.data.User;
 import com.bitsplease.skillslist_server.restservice.Response;
 import com.bitsplease.skillslist_server.restservice.SuccessState;
 import com.bitsplease.skillslist_server.restservice.model.SkillblockSkills;
 import com.bitsplease.skillslist_server.restservice.model.StringPair;
-import com.bitsplease.skillslist_server.utils.Pair;
 import com.google.gson.Gson;
 
 import org.springframework.web.bind.annotation.GetMapping;

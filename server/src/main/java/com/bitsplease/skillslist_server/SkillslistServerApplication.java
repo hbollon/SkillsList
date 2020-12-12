@@ -38,7 +38,7 @@ public class SkillslistServerApplication {
 		db.insertSkillBlock(new SkillBlock("C++", "Your skill in this language"));
 		db.insertSkillBlock(new SkillBlock("Go", "Your skill in this language"));
 		db.insertSkillBlock(new SkillBlock("C", "Your skill in this language"));
-		
+
 		db.insertSkillBlock(new SkillBlock("JS", "Your skill in this language"), new Skill[]{
 			new Skill("Threads", "", false),
 			new Skill("VueJS", "", true),
@@ -73,6 +73,7 @@ public class SkillslistServerApplication {
 		db.requestSkill(currentUser.getUsername(), "Modules", "Go");
 		db.requestSkill(currentUser.getUsername(), "Pointeurs", "C++");
 		db.requestSkill(currentUser.getUsername(), "COO", "C++");
+		db.requestSkill(currentUser.getUsername(), "VueJS", "JS");
 
 		db.validateSkill(admin.getUsername(), "hbollon", "Go", "Pointeurs");
 		db.validateSkill(test.getUsername(), "hbollon", "Go", "Modules");
@@ -101,6 +102,11 @@ public class SkillslistServerApplication {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+
+		Skill[] allSkillsSbByUser = db.getAllSkillOfSkillblockByUser("hbollon", "JS");
+		for (Skill skill : allSkillsSbByUser) {
+			System.out.println(skill.toString());
 		}
 
 		SpringApplication.run(SkillslistServerApplication.class, args);

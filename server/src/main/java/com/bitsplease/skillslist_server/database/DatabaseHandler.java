@@ -789,6 +789,35 @@ public class DatabaseHandler {
         return output;
     }
 
+    public Skill[] getAllSkillOfSkillblockByUser(String username, String skillblockName) {
+        Skill[] skillblockSkills = getAllSkillFromSkillBlock(skillblockName);
+
+        String sql = "SELECT " + USER_SKILLS_SKILL_ID + ", " + USER_SKILLS_SKILL_STATUS + " FROM " + USER_SKILLS_TABLE_NAME + " WHERE `" + USER_SKILLS_USER_ID + "`='" + getUserId(username) + "'";
+        ArrayList<Skill> userSkills = new ArrayList<Skill>();
+        try(Statement st = conn.createStatement(); 
+            ResultSet rs = st.executeQuery(sql)) {
+            while(rs.next()){
+                Skill tmp = getSkillById(rs.getInt(1));
+                tmp.setValidate(rs.getInt(2));
+                userSkills.add(tmp);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        for (int i = 0; i < skillblockSkills.length; i++) {
+            for (Skill userSkill : userSkills) {
+                if(skillblockSkills[i].equals(userSkill)) {
+                    skillblockSkills[i] = userSkill;
+                    break;
+                }
+            }
+        }
+
+        return skillblockSkills;
+    }
+
     public Skill[] getAllSkillOfUserBySkillblock(String username, String skillblockName) {
         Skill[] skillblockSkills = getAllSkillFromSkillBlock(skillblockName);
 
