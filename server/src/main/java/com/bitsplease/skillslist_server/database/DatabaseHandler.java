@@ -915,5 +915,61 @@ public class DatabaseHandler {
         }
     }
 
+    public boolean cancelSkillRequest(String connectedUserName, String user, String skillblockName, String skillName) {
+        System.out.println("Trying to cancel skill request...");
+        try {
+            int userId = getUserId(user);
+            if (userId == -1) {
+                System.out.println("Error: User don't exist !");
+                return false;
+            }
+
+            Role connectedUser = getUserRole(connectedUserName);
+            if (connectedUser == null) {
+                System.out.println("Error: User not exist or doesn't have role !");
+                return false;
+            } else if (!connectedUser.getCanValidate() && getUserId(connectedUserName) != userId) {
+                System.out.println("Error: User role not allowed to cancel this skill request !");
+                return false;
+            }
+
+            SkillBlock skillblock = getSkillBlock(skillblockName);
+            if (skillblock == null) {
+                System.out.println("Error: Skillblock don't exist !");
+                return false;
+            }
+
+            Skill skill = getSkillByName(skillblock.getDbId(), skillName);
+            if(skill == null) {
+                System.out.println("Error: Skill don't exist !");
+                return false;
+            }
+
+            String check_existing_request = "SELECT * FROM " + USER_SKILLS_TABLE_NAME + " WHERE `" + USER_SKILLS_USER_ID + "`='" + userId + "' AND `" + USER_SKILLS_SKILL_ID + "`='" + skill.getDbId() + "'";
+            try(ResultSet rs = statement.executeQuery(check_existing_request)){
+                if(!rs.next()) {
+                    System.out.println("Error: Skill request don't exist in user ones !");
+                    return false;
+                }
+            }
+
+            String sql = "DELETE FROM " + USER_SKILLS_TABLE_NAME + " WHERE `" + USER_SKILLS_USER_ID + "`='" + userId + 
+            "' AND `" + USER_SKILLS_SKILL_ID + "`='" + skill.getDbId() + "'";
+
+
+            int result = statement.executeUpdate(sql);
+            if (result > 0) {
+                System.out.println("Skill request cancelation successed!");
+                return true;
+            } else {
+                System.out.println("Skill request cancelation failed!");
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
 }

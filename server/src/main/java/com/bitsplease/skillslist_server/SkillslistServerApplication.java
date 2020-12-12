@@ -70,6 +70,9 @@ public class SkillslistServerApplication {
 
 		db.validateSkill(admin.getUsername(), "hbollon", "Go", "Pointeurs");
 		db.validateSkill(test.getUsername(), "hbollon", "Go", "Modules");
+		db.cancelSkillRequest(test.getUsername(), "hbollon", "C++", "Pointeurs");
+		db.cancelSkillRequest(admin.getUsername(), "hbollon", "C++", "Pointeurs");
+		db.cancelSkillRequest(currentUser.getUsername(), "hbollon", "C++", "COO");
 
 		Skill[] userSkills = db.getAllSkillOfUser("hbollon");
 		for (Skill skill : userSkills) {

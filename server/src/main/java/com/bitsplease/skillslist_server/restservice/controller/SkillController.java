@@ -106,6 +106,18 @@ public class SkillController {
             return new SuccessState(counter.incrementAndGet(), false);
         }
     }
+    
+    @PostMapping(path = "/cancelSkillRequest", consumes = "application/json", produces = "application/json")
+    public SuccessState cancelSkillRequest(
+        @RequestBody SkillValidation request) 
+    {
+        boolean success = SkillslistServerApplication.db.cancelSkillRequest(request.connectedUsername, request.username, request.skillblockName, request.skillName);
+        if(success){
+            return new SuccessState(counter.incrementAndGet(), true);
+        } else {
+            return new SuccessState(counter.incrementAndGet(), false);
+        }
+    }
 
     @PostMapping(path = "/isValidated", consumes = "application/json", produces = "application/json")
     public ResponseBool isValidated(
