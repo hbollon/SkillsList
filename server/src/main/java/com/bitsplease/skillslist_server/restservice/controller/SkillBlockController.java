@@ -5,6 +5,7 @@ import com.bitsplease.skillslist_server.data.SkillBlock;
 import com.bitsplease.skillslist_server.data.User;
 import com.bitsplease.skillslist_server.restservice.Response;
 import com.bitsplease.skillslist_server.restservice.SuccessState;
+import com.bitsplease.skillslist_server.restservice.model.SkillblockSkills;
 import com.bitsplease.skillslist_server.restservice.model.StringPair;
 import com.bitsplease.skillslist_server.utils.Pair;
 import com.google.gson.Gson;
@@ -20,6 +21,30 @@ import java.util.concurrent.atomic.AtomicLong;
 @RestController
 public class SkillBlockController {
     private final AtomicLong counter = new AtomicLong();
+
+    @PostMapping(path = "/addSkillBlock", consumes = "application/json", produces = "application/json")
+    public SuccessState addSkillBlock(
+        @RequestBody SkillBlock request) 
+    {
+        boolean success = SkillslistServerApplication.db.insertSkillBlock(request);
+        if(success){
+            return new SuccessState(counter.incrementAndGet(), true);
+        } else {
+            return new SuccessState(counter.incrementAndGet(), false);
+        }
+    }
+
+    @PostMapping(path = "/addSkillBlockWithSkills", consumes = "application/json", produces = "application/json")
+    public SuccessState addSkillBlockWithSkills(
+        @RequestBody SkillblockSkills request) 
+    {
+        boolean success = SkillslistServerApplication.db.insertSkillBlock(request.skillblock, request.skills);
+        if(success){
+            return new SuccessState(counter.incrementAndGet(), true);
+        } else {
+            return new SuccessState(counter.incrementAndGet(), false);
+        }
+    }
 
     @GetMapping("/getAllSkillBlocks")
     public Response getAll()

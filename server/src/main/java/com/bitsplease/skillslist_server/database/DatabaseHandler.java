@@ -484,6 +484,37 @@ public class DatabaseHandler {
         }
     }
 
+    public boolean insertSkillBlock(SkillBlock s, Skill[] skills) {
+        System.out.println("Trying to insert new skillblock...");
+        String check_existing_request = "SELECT * FROM skillblock WHERE `" + SKILLBLOCK_DB_NAME + "`='" + s.getBlockName() + "'";
+        try(ResultSet rs = statement.executeQuery(check_existing_request);) {
+            if(rs.next()) {
+                System.out.println("Error: SkillBlock already exists !");
+                return false;
+            }
+            String sql = "INSERT INTO " + SKILLBLOCK_TABLE_NAME + "(`" + SKILLBLOCK_DB_NAME + "`, `" + SKILLBLOCK_DB_DESC + "`) VALUES (?, ?)";
+
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1, s.getBlockName());
+            statement.setString(2, s.getBlockDesc());
+
+            int result = statement.executeUpdate();
+            if (result > 0) {
+                System.out.println("A new skillblock was inserted successfully!");
+                for (Skill skill : skills) {
+                    insertSkill(s.getBlockName(), skill);
+                }
+                return true;
+            } else {
+                System.out.println("Skillblock insert failed!");
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public boolean updateSkillBlock(SkillBlock s) {
         try {
             String sql = "UPDATE " + SKILLBLOCK_TABLE_NAME + " SET " + SKILLBLOCK_DB_NAME + "=?, "

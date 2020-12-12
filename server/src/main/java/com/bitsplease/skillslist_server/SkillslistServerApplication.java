@@ -38,6 +38,12 @@ public class SkillslistServerApplication {
 		db.insertSkillBlock(new SkillBlock("C++", "Your skill in this language"));
 		db.insertSkillBlock(new SkillBlock("Go", "Your skill in this language"));
 		db.insertSkillBlock(new SkillBlock("C", "Your skill in this language"));
+		
+		db.insertSkillBlock(new SkillBlock("JS", "Your skill in this language"), new Skill[]{
+			new Skill("Threads", "", false),
+			new Skill("VueJS", "", true),
+			new Skill("Lambda functions", "", false)
+		});
 
 		SkillBlock[] testSkillBlocks = db.getAllSkillBlock();
 		for (SkillBlock skillBlock : testSkillBlocks) {
