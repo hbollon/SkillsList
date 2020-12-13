@@ -101,19 +101,22 @@ class _SkillListPageState extends State<SkillListPage> {
     String url;
     if (validated) {
       url = sprintf("http://%s:8080/requestSkill", [MyApp.ip]);
-
-      Map map = {
-        'username': User.loggedInUser.username,
-        'skillName': skill.name,
-        'skillblockName': this.title,
-      };
-
-      print(url);
-      final response = await http.post(url,
-          headers: {"Content-Type": "application/json; charset=UTF-8"},
-          body: json.encode(map));
-      print(response.body);
+    } else {
+      url = sprintf("http://%s:8080/cancelSkillRequest", [MyApp.ip]);
     }
+
+    Map map = {
+      'connectedUsername': "admin",
+      'username': User.loggedInUser.username,
+      'skillblockName': this.title,
+      'skillName': skill.name,
+    };
+
+    print(url);
+    final response = await http.post(url,
+        headers: {"Content-Type": "application/json; charset=UTF-8"},
+        body: json.encode(map));
+    print(response.body);
 
     return true;
   }
@@ -196,13 +199,14 @@ class _SkillListPageState extends State<SkillListPage> {
                                                     .switchStates
                                                     .elementAt(index - 1),
                                                 onChanged: (value) {
-                                                  setState(() {
-                                                    this.switchStates[
-                                                        index - 1] = value;
-
-                                                    // MAKE THE REQUEST
-                                                    requestSkillUpdate(
-                                                        skill, value);
+                                                  Future<bool> output =
+                                                      requestSkillUpdate(
+                                                          skill, value);
+                                                  output.whenComplete(() {
+                                                    setState(() {
+                                                      this.switchStates[
+                                                          index - 1] = value;
+                                                    });
                                                   });
                                                 },
                                                 activeColor:

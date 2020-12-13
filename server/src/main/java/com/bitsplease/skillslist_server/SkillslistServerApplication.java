@@ -39,7 +39,7 @@ public class SkillslistServerApplication {
 
 		db.insertSkillBlock(new SkillBlock("JS", "Your skill in this language"), new Skill[]{
 			new Skill("Threads", "", false),
-			new Skill("VueJS", "", true),
+			new Skill("VueJS", "", false),
 			new Skill("Lambda functions", "", false)
 		});
 
@@ -50,10 +50,10 @@ public class SkillslistServerApplication {
 		db.updateSkillBlock(new SkillBlock("Cpp", "You're a dumb bro!"));
 		System.out.println(db.getSkillBlock("Cpp").toString());
 
-		db.insertSkill("Go", new Skill("COO", "ex1", true));
+		db.insertSkill("Go", new Skill("COO", "ex1", false));
 		db.insertSkill("Go", new Skill("Pointeurs", "ex", false));
 		db.insertSkill("Go", new Skill("Modules", "ex", false));
-		db.insertSkill("Cpp", new Skill("COO", "ex", true));
+		db.insertSkill("Cpp", new Skill("COO", "ex", false));
 		db.insertSkill("Cpp", new Skill("Pointeurs", "ex", false));
 		db.updateSkill("Go", new Skill("Pointeurs", "ex3", false));
 		db.deleteSkill("Go", "COO");
@@ -66,8 +66,6 @@ public class SkillslistServerApplication {
 		db.subscribeSkillBlock(currentUser.getUsername(), db.getSkillBlock("C").getBlockName());
 		db.subscribeSkillBlock(currentUser.getUsername(), db.getSkillBlock("Cpp").getBlockName());
 		db.unsubscribeSkillBlock(currentUser.getUsername(), db.getSkillBlock("C").getBlockName());
-
-		db.requestSkill("hbollon", "Pointeurs", "Go");
 
 		Skill[] userSkills = db.getAllSkillOfUser("hbollon");
 		for (Skill skill : userSkills) {

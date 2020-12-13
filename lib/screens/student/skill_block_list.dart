@@ -41,7 +41,41 @@ class _SkillBlockListState extends State<SkillBlockList> {
       String name = sb["blockName"];
       int sbId = sb["dbId"];
       String desc = sb["blockDesc"];
-      double value = 0.0;
+
+      final url = sprintf(
+          "http://%s:8080/getAllSkillOfSkillblockByUser?username=%s&skillblockName=%s",
+          [MyApp.ip, User.loggedInUser.username, name]);
+
+      print(url);
+      final response = await http.get(url,
+          headers: {"Content-Type": "application/json; charset=UTF-8"});
+      print(response.body);
+
+      var jsonResponse = json.decode(response.body);
+      final data = json.decode(jsonResponse["content"]);
+
+      int nbVal = 0;
+      int tot = 0;
+
+      for (var skill in data) {
+        String name = skill["skillName"];
+        int dbId = skill["dbId"];
+        String desc = skill["skillDesc"];
+        int validate = skill["validate"];
+
+        if (validate == 1) {
+          ++nbVal;
+        }
+        ++tot;
+      }
+
+      double value;
+
+      if (tot != 0) {
+        value = nbVal / tot;
+      } else {
+        value = 0.0;
+      }
 
       SkillBlock s = SkillBlock(name, desc, value, sbId);
       this.skillblocks.add(s);

@@ -22,7 +22,25 @@ class _AddSkillBlockPageState extends State<AddSkillBlockPage> {
   TextEditingController descriptionController = new TextEditingController();
   final formKey = GlobalKey<FormState>();
 
-  Future<bool> addBlockRequest(String name, String desc) async {}
+  Future<bool> addBlockRequest(String name, String desc) async {
+    final url = sprintf("http://%s:8080/addSkillBlock", [MyApp.ip]);
+
+    Map map = {
+      'blockName': name,
+      'blockDesc': desc,
+    };
+
+    print(url);
+    final response = await http.post(url,
+        headers: {"Content-Type": "application/json; charset=UTF-8"},
+        body: json.encode(map));
+    print(response.body);
+
+    //var jsonResponse = json.decode(response.body);
+    //final data = json.decode(jsonResponse["content"]);
+
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,12 +85,14 @@ class _AddSkillBlockPageState extends State<AddSkillBlockPage> {
 
                   if (nameController.text != "" &&
                       descriptionController.text != "") {
-                    Future<bool> output;
+                    Future<bool> output = addBlockRequest(
+                        nameController.text, descriptionController.text);
                     output.then((value) {
                       if (value) {
                         Scaffold.of(context).showSnackBar(SnackBar(
                           content: Text("New block created !"),
                         ));
+                        Navigator.pop(context);
                         Navigator.push(
                           context,
                           MaterialPageRoute(

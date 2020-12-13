@@ -113,7 +113,7 @@ class _SkillListTeacherPageState extends State<SkillListTeacherPage> {
             appBar: AppBar(
               title: Text("Skills : " + this.title),
             ),
-            drawer: MenuDrawer(),
+            drawer: MenuDrawerTeacher(),
             body: Container(
                 child: FutureBuilder(
                     future: fetch,

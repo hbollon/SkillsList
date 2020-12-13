@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:skillslist/screens/login.dart';
 import 'package:skillslist/screens/student/skill_block_list.dart';
+import 'package:skillslist/screens/student/profile.dart';
 import 'package:skillslist/screens/teacher/skill_block_list_teacher.dart';
 import 'package:skillslist/screens/teacher/student_list.dart';
 import 'package:skillslist/models/User.dart';
@@ -23,7 +24,15 @@ class MenuDrawer extends StatelessWidget {
                 "Menu",
                 style: style,
               )),
-          ListTile(leading: Icon(Icons.person), title: Text("Profile")),
+          ListTile(
+            leading: Icon(Icons.person),
+            title: Text("Profile"),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ProfilePage()));
+            },
+          ),
           ListTile(
             leading: Icon(Icons.list),
             title: Text("Your Skills"),

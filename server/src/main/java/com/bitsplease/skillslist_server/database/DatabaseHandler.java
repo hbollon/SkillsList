@@ -708,16 +708,28 @@ public class DatabaseHandler {
 
     public boolean deleteSkill(String sbName, String skillname){
         SkillBlock skillblock = getSkillBlock(sbName);
+        Skill skill;
+        if(skillname != null)
+            skill = getSkillByName(skillblock.getDbId(), skillname);
+        else {
+            System.out.println("Skill delete failed: Invalid skillname argument.");
+            return false;
+        }
 
-        String sql = "DELETE FROM " + SKILL_TABLE_NAME + " WHERE `" + SKILL_DB_NAME + "`='" + skillname + "' AND `" + SKILL_SKILLBLOCK_ID + "`='" + skillblock.getDbId() + "'";
+        String sqlDeleteForeigns = "DELETE FROM " + USER_SKILLS_TABLE_NAME + " WHERE `" + USER_SKILLS_SKILL_ID + "`='" + skill.getDbId() + "'";
+        String sqlDeleteSkill = "DELETE FROM " + SKILL_TABLE_NAME + " WHERE `id`='" + skill.getDbId() + "'";
         try {
-            int result = statement.executeUpdate(sql);
-            if (result > 0) {
+            int resultForeigns = statement.executeUpdate(sqlDeleteForeigns);
+            int resultSkill = statement.executeUpdate(sqlDeleteSkill);
+            if (resultForeigns == 0) {
+                System.out.println("Skill delete failed: Error during foreigns row deletion");
+                return false;
+            } else if (resultSkill == 0) {
+                System.out.println("Skill delete failed: Error during skill deletion");
+                return false;
+            } else {
                 System.out.println("The skill was deleted successfully!");
                 return true;
-            } else {
-                System.out.println("Skill delete failed!");
-                return false;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -727,16 +739,29 @@ public class DatabaseHandler {
 
     public boolean deleteSkill(String sbName, Skill skill){
         SkillBlock skillblock = getSkillBlock(sbName);
+        if(skill.getDbId() == 0) {
+            if(skill.getSkillName() != null)
+                skill = getSkillByName(skillblock.getDbId(), skill.getSkillName());
+            else {
+                System.out.println("Skill delete failed: Invalid skill argument.");
+                return false;
+            }
+        }
 
-        String sql = "DELETE FROM " + SKILL_TABLE_NAME + " WHERE `" + SKILL_DB_NAME + "`='" + skill.getSkillName() + "' AND `" + SKILL_SKILLBLOCK_ID + "`='" + skillblock.getDbId() + "'";
+        String sqlDeleteForeigns = "DELETE FROM " + USER_SKILLS_TABLE_NAME + " WHERE `" + USER_SKILLS_SKILL_ID + "`='" + skill.getDbId() + "'";
+        String sqlDeleteSkill = "DELETE FROM " + SKILL_TABLE_NAME + " WHERE `id`='" + skill.getDbId() + "'";
         try {
-            int result = statement.executeUpdate(sql);
-            if (result > 0) {
+            int resultForeigns = statement.executeUpdate(sqlDeleteForeigns);
+            int resultSkill = statement.executeUpdate(sqlDeleteSkill);
+            if (resultForeigns == 0) {
+                System.out.println("Skill delete failed: Error during foreigns row deletion");
+                return false;
+            } else if (resultSkill == 0) {
+                System.out.println("Skill delete failed: Error during skill deletion");
+                return false;
+            } else {
                 System.out.println("The skill was deleted successfully!");
                 return true;
-            } else {
-                System.out.println("Skill delete failed!");
-                return false;
             }
         } catch (SQLException e) {
             e.printStackTrace();

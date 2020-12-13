@@ -64,10 +64,9 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   assets:
-    - python.png
-    - java.png
-    - cpp.png
-    - test.gif
+    - bronze.png
+    - silver.png
+    - gold.png
 
   fonts:
       - family: Montserrat
