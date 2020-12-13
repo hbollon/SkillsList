@@ -773,7 +773,8 @@ public class DatabaseHandler {
         SkillBlock skillBlock = getSkillBlock(skillblockname);
         String sql = "SELECT * FROM " + SKILL_TABLE_NAME + " WHERE " + SKILL_SKILLBLOCK_ID + "=" + skillBlock.getDbId();
         ArrayList<Skill> skills = new ArrayList<Skill>();
-        try(ResultSet rs = statement.executeQuery(sql)) {
+        try(Statement st = conn.createStatement(); 
+            ResultSet rs = st.executeQuery(sql)) {
             while(rs.next()){
                 skills.add(new Skill(rs.getInt(1), rs.getInt(4), rs.getString(2), rs.getString(3), rs.getBoolean(5)));
             }
