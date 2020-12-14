@@ -117,47 +117,6 @@ public class SkillslistServerApplication {
 		// 	System.out.println(user.toString());
 		// }
 
-		/*
-
-		db.subscribeSkillBlock(currentUser.getUsername(), db.getSkillBlock("Go").getBlockName());
-		db.subscribeSkillBlock(currentUser.getUsername(), db.getSkillBlock("C").getBlockName());
-		db.subscribeSkillBlock(currentUser.getUsername(), db.getSkillBlock("Cpp").getBlockName());
-		db.unsubscribeSkillBlock(currentUser.getUsername(), db.getSkillBlock("C").getBlockName());
-
-		Skill[] userSkills = db.getAllSkillOfUser("hbollon");
-		for (Skill skill : userSkills) {
-			System.out.println(skill.toString());
-		}
-
-		System.out.println();
-
-		Skill[] userSkillsSb = db.getAllSkillOfUserBySkillblock("hbollon", "Go");
-		for (Skill skill : userSkillsSb) {
-			System.out.println(skill.toString());
-		}
-
-		System.out.println();
-
-		Skill[] testValidateSkills = db.getAllSkillOfUser("hbollon");
-		for (Skill skill : testValidateSkills) {
-			try{
-				System.out.println(db.checkSkillValidation("hbollon", skill));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
-		Skill[] allSkillsSbByUser = db.getAllSkillOfSkillblockByUser("hbollon", "JS");
-		for (Skill skill : allSkillsSbByUser) {
-			System.out.println(skill.toString());
-		}
-
-		User[] students = db.getAllUserWithRole(new Role(2));
-		for (User user : students) {
-			System.out.println(user.toString());
-		}
-		*/
-
 		SpringApplication.run(SkillslistServerApplication.class, args);
 	}
 }
