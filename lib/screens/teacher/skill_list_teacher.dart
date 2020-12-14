@@ -51,7 +51,6 @@ class _SkillListTeacherPageState extends State<SkillListTeacherPage> {
     final url = sprintf(
         "http://%s:8080/getSkills?blockName=%s", [MyApp.ip, this.title]);
 
-    print(url);
     final response = await http
         .get(url, headers: {"Content-Type": "application/json; charset=UTF-8"});
     print(response.body);

@@ -56,14 +56,14 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController passwordController = new TextEditingController();
   TextEditingController firstNameController = new TextEditingController();
   TextEditingController lastNameController = new TextEditingController();
-  final formKey = GlobalKey<FormState>();
+  var formKey = GlobalKey<FormState>();
 
   int roleValue = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(body: Builder(builder: (BuildContext context) {
-      final roleField = DropdownButton(
+      var roleField = DropdownButton(
           style: style,
           value: roleValue,
           hint: Text("Select a role"),
@@ -77,7 +77,7 @@ class _RegisterPageState extends State<RegisterPage> {
             });
           });
 
-      final usernameField = TextField(
+      var usernameField = TextField(
         controller: usernameController,
         obscureText: false,
         style: style,
@@ -88,7 +88,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
       );
 
-      final passwordField = TextField(
+      var passwordField = TextField(
         controller: passwordController,
         obscureText: true,
         style: style,
@@ -99,7 +99,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
       );
 
-      final firstNameField = TextField(
+      var firstNameField = TextField(
         controller: firstNameController,
         obscureText: false,
         style: style,
@@ -110,7 +110,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
       );
 
-      final lastNameField = TextField(
+      var lastNameField = TextField(
         controller: lastNameController,
         obscureText: false,
         style: style,
@@ -121,7 +121,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
       );
 
-      final registerButton = Material(
+      var registerButton = Material(
         elevation: 5.0,
         borderRadius: BorderRadius.circular(30.0),
         color: _buttonIsActivated ? Colors.deepPurple : Colors.grey,

@@ -91,7 +91,6 @@ class MenuDrawerTeacher extends StatelessWidget {
               leading: Icon(Icons.people),
               title: Text("Students"),
               onTap: () {
-                User.loggedInUser = null;
                 Navigator.pop(context);
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => StudentListPage()));

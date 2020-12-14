@@ -56,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     TextEditingController usernameController = new TextEditingController();
-    final usernameField = TextField(
+    var usernameField = TextField(
       controller: usernameController,
       obscureText: false,
       style: style,
@@ -68,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     TextEditingController passwordController = new TextEditingController();
-    final passwordField = TextField(
+    var passwordField = TextField(
       controller: passwordController,
       obscureText: true,
       style: style,
@@ -79,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
               OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
     );
 
-    final loginButton = Material(
+    var loginButton = Material(
       elevation: 5.0,
       borderRadius: BorderRadius.circular(30.0),
       color: _buttonIsActivated ? Colors.deepPurple : Colors.grey,
@@ -128,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
 
-    final registerButon = Material(
+    var registerButon = Material(
       elevation: 5.0,
       borderRadius: BorderRadius.circular(30.0),
       color: Colors.deepPurple,
