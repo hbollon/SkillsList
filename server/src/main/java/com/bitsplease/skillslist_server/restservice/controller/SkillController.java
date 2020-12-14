@@ -11,7 +11,6 @@ import com.bitsplease.skillslist_server.restservice.model.SkillUser;
 import com.bitsplease.skillslist_server.restservice.model.SkillValidation;
 import com.google.gson.Gson;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -161,7 +160,7 @@ public class SkillController {
         }
     }
 
-    @DeleteMapping(path = "/deleteSkill", consumes = "application/json", produces = "application/json")
+    @PostMapping(path = "/deleteSkill", consumes = "application/json", produces = "application/json")
     public SuccessState deleteSkill(
         @RequestBody SkillCrud request) 
     {

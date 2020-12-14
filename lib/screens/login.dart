@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:skillslist/main.dart';
 import 'package:skillslist/models/User.dart';
 import 'package:skillslist/screens/register.dart';
-import 'package:skillslist/screens/skill_block_list.dart';
+import 'package:skillslist/screens/student/skill_block_list.dart';
+import 'package:skillslist/screens/teacher/skill_block_list_teacher.dart';
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -16,12 +17,10 @@ Future<bool> login(String username, String password) async {
     'password': password,
   };
 
-  final url = sprintf(
-      "http://%s:8080/login",
-      [MyApp.ip]);
+  final url = sprintf("http://%s:8080/login", [MyApp.ip]);
   final response = await http.post(url,
-    headers: {"Content-Type": "application/json"}, 
-    body: json.encode(regUser));
+      headers: {"Content-Type": "application/json"},
+      body: json.encode(regUser));
   print(response.body);
 
   var jsonResponse = json.decode(response.body);
@@ -30,8 +29,15 @@ Future<bool> login(String username, String password) async {
     return false;
   } else {
     final userData = json.decode(jsonResponse["content"]);
+    UserRole role = new UserRole(
+        userData["userRole"]["roleName"],
+        userData["userRole"]["canValidate"],
+        userData["userRole"]["canAddSkill"]);
+    print(role.name);
+    print(role.canValidate);
+    print(role.canAddSkill);
     User.loggedInUser = new User(userData["dbId"], userData["username"],
-        userData["firstName"], userData["lastName"]);
+        userData["firstName"], userData["lastName"], role);
     print("Successfully logged in!");
     return true;
   }
@@ -50,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     TextEditingController usernameController = new TextEditingController();
-    final usernameField = TextField(
+    var usernameField = TextField(
       controller: usernameController,
       obscureText: false,
       style: style,
@@ -62,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     TextEditingController passwordController = new TextEditingController();
-    final passwordField = TextField(
+    var passwordField = TextField(
       controller: passwordController,
       obscureText: true,
       style: style,
@@ -73,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
               OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
     );
 
-    final loginButton = Material(
+    var loginButton = Material(
       elevation: 5.0,
       borderRadius: BorderRadius.circular(30.0),
       color: _buttonIsActivated ? Colors.deepPurple : Colors.grey,
@@ -90,10 +96,20 @@ class _LoginPageState extends State<LoginPage> {
                     login(usernameController.text, passwordController.text);
                 output.then((value) {
                   if (value) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SkillBlockList()),
-                    );
+                    Navigator.pop(context);
+                    if (User.loggedInUser.role.name == "Student") {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SkillBlockList()),
+                      );
+                    } else if (User.loggedInUser.role.name == "Teacher") {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SkillBlockListTeacher()),
+                      );
+                    }
                   } else {
                     Scaffold.of(context).showSnackBar(SnackBar(
                       content: Text(
@@ -112,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
 
-    final registerButon = Material(
+    var registerButon = Material(
       elevation: 5.0,
       borderRadius: BorderRadius.circular(30.0),
       color: Colors.deepPurple,
