@@ -140,7 +140,8 @@ public class DatabaseHandler {
         System.out.println("Trying to add new role...");
         try {
             String check_existing_request = "SELECT * FROM " + ROLE_TABLE_NAME + " WHERE `" + ROLE_DB_NAME + "`='" + r.getRoleName() + "'";
-            try(ResultSet rs = statement.executeQuery(check_existing_request)){
+            try(Statement st = conn.createStatement(); 
+                ResultSet rs = st.executeQuery(check_existing_request)){
                 if(rs.next()) {
                     System.out.println("Error: Role already exists !");
                     return false;
@@ -193,7 +194,8 @@ public class DatabaseHandler {
 
     public Role getRole(String name) {
         String sql = "SELECT * FROM " + ROLE_TABLE_NAME + " WHERE `" + ROLE_DB_NAME + "`='" + name + "'";
-        try (ResultSet rs = statement.executeQuery(sql)) {
+        try (Statement st = conn.createStatement(); 
+             ResultSet rs = st.executeQuery(sql)) {
             if (rs.next()) {
                 return new Role(rs.getInt(1), rs.getString(2), rs.getBoolean(3), rs.getBoolean(4));
             }
@@ -206,7 +208,8 @@ public class DatabaseHandler {
 
     public Role getRoleById(int id) {
         String sql = "SELECT * FROM " + ROLE_TABLE_NAME + " WHERE `id`='" + id + "'";
-        try (ResultSet rs = statement.executeQuery(sql)) {
+        try (Statement st = conn.createStatement(); 
+             ResultSet rs = st.executeQuery(sql)) {
             if (rs.next()) {
                 return new Role(rs.getInt(1), rs.getString(2), rs.getBoolean(3), rs.getBoolean(4));
             }
@@ -220,7 +223,8 @@ public class DatabaseHandler {
     public Role[] getAllRoles() {
         String sql = "SELECT * FROM " + ROLE_TABLE_NAME;
         ArrayList<Role> roles = new ArrayList<Role>();
-        try(ResultSet rs = statement.executeQuery(sql)) {
+        try(Statement st = conn.createStatement(); 
+            ResultSet rs = st.executeQuery(sql)) {
             while(rs.next()){
                 roles.add(new Role(rs.getInt(1), rs.getString(2), rs.getBoolean(3), rs.getBoolean(4)));
             }
@@ -241,7 +245,8 @@ public class DatabaseHandler {
         System.out.println("Trying to register new user...");
         try {
             String check_existing_request = "SELECT * FROM user WHERE `" + USER_DB_USERNAME + "`='" + u.getUsername() + "'";
-            try(ResultSet rs = statement.executeQuery(check_existing_request)){
+            try(Statement st = conn.createStatement(); 
+                ResultSet rs = st.executeQuery(check_existing_request)){
                 if(rs.next()) {
                     System.out.println("Error: User already exists !");
                     return false;
@@ -326,7 +331,8 @@ public class DatabaseHandler {
 
     public int getUserId(String login) {
         String sql = "SELECT * FROM user WHERE `" + USER_DB_USERNAME + "`='" + login + "'";
-        try (ResultSet rs = statement.executeQuery(sql)) {
+        try (Statement st = conn.createStatement(); 
+             ResultSet rs = st.executeQuery(sql)) {
             if (rs.next()) {
                 return rs.getInt(1);
             }
@@ -339,7 +345,8 @@ public class DatabaseHandler {
 
     private User getUser(String login) {
         String sql = "SELECT * FROM user WHERE `" + USER_DB_USERNAME + "`='" + login + "'";
-        try (ResultSet rs = statement.executeQuery(sql)) {
+        try (Statement st = conn.createStatement(); 
+             ResultSet rs = st.executeQuery(sql)) {
             if (rs.next()) {
                 return new User(rs.getInt(1), rs.getString(2), rs.getString(5), rs.getString(6), getRoleById(rs.getInt(7)));
             }
@@ -377,7 +384,8 @@ public class DatabaseHandler {
 
     public User connectUser(String login, String password) {
         String sql = "SELECT * FROM user WHERE `" + USER_DB_USERNAME + "`='" + login + "'";
-        try (ResultSet rs = statement.executeQuery(sql)) {
+        try (Statement st = conn.createStatement(); 
+             ResultSet rs = st.executeQuery(sql)) {
             if (rs.next()) {
                 if (HashUtils.verifyUserPassword(password, rs.getString(3), rs.getString(4))) {
                     System.out.println("User succesfully logged in!");
@@ -409,7 +417,8 @@ public class DatabaseHandler {
             String check_existing_request = "SELECT * FROM " + USER_SKILLBLOCKS_TABLE_NAME + " WHERE `"
                     + USER_SKILLBLOCKS_USER_ID + "`='" + userId + "' AND `" + USER_SKILLBLOCKS_SKILLBLOCK_ID + "`='"
                     + skillblock.getDbId() + "'";
-            try(ResultSet rs = statement.executeQuery(check_existing_request)) {
+            try(Statement st = conn.createStatement(); 
+                ResultSet rs = st.executeQuery(check_existing_request)) {
                 if (rs.next()) {
                     System.out.println("Error: User already subscribed to this skillblock !");
                     return false;
@@ -477,7 +486,8 @@ public class DatabaseHandler {
     public boolean insertSkillBlock(SkillBlock s) {
         System.out.println("Trying to insert new skillblock...");
         String check_existing_request = "SELECT * FROM skillblock WHERE `" + SKILLBLOCK_DB_NAME + "`='" + s.getBlockName() + "'";
-        try(ResultSet rs = statement.executeQuery(check_existing_request);) {
+        try(Statement st = conn.createStatement(); 
+            ResultSet rs = st.executeQuery(check_existing_request);) {
             if(rs.next()) {
                 System.out.println("Error: SkillBlock already exists !");
                 return false;
@@ -505,7 +515,8 @@ public class DatabaseHandler {
     public boolean insertSkillBlock(SkillBlock s, Skill[] skills) {
         System.out.println("Trying to insert new skillblock...");
         String check_existing_request = "SELECT * FROM skillblock WHERE `" + SKILLBLOCK_DB_NAME + "`='" + s.getBlockName() + "'";
-        try(ResultSet rs = statement.executeQuery(check_existing_request);) {
+        try(Statement st = conn.createStatement(); 
+            ResultSet rs = st.executeQuery(check_existing_request);) {
             if(rs.next()) {
                 System.out.println("Error: SkillBlock already exists !");
                 return false;
@@ -575,7 +586,8 @@ public class DatabaseHandler {
 
     public SkillBlock getSkillBlock(String name) {
         String sql = "SELECT * FROM " + SKILLBLOCK_TABLE_NAME + " WHERE `" + SKILLBLOCK_DB_NAME + "`='" + name + "'";
-        try(ResultSet rs = statement.executeQuery(sql);) {
+        try(Statement st = conn.createStatement(); 
+            ResultSet rs = st.executeQuery(sql)) {
             if(rs.next()){
                 return new SkillBlock(rs.getInt(1), rs.getString(2), rs.getString(3));
             }
@@ -589,7 +601,8 @@ public class DatabaseHandler {
 
     public SkillBlock getSkillBlockById(int id) {
         String sql = "SELECT * FROM " + SKILLBLOCK_TABLE_NAME + " WHERE `id`='" + id + "'";
-        try(ResultSet rs = statement.executeQuery(sql);) {
+        try(Statement st = conn.createStatement(); 
+            ResultSet rs = st.executeQuery(sql)) {
             if(rs.next()){
                 return new SkillBlock(rs.getInt(1), rs.getString(2), rs.getString(3));
             }
@@ -604,7 +617,8 @@ public class DatabaseHandler {
     public SkillBlock[] getAllSkillBlock() {
         String sql = "SELECT * FROM " + SKILLBLOCK_TABLE_NAME;
         ArrayList<SkillBlock> skillblocks = new ArrayList<SkillBlock>();
-        try(ResultSet rs = statement.executeQuery(sql)) {
+        try(Statement st = conn.createStatement(); 
+            ResultSet rs = st.executeQuery(sql)) {
             while(rs.next()){
                 skillblocks.add(new SkillBlock(rs.getInt(1), rs.getString(2), rs.getString(3)));
             }
@@ -650,7 +664,8 @@ public class DatabaseHandler {
             }
 
             String check_existing_request = "SELECT * FROM skill WHERE `" + SKILL_DB_NAME + "`='" + skill.getSkillName() + "' AND `" + SKILL_SKILLBLOCK_ID + "`='" + associatedSkillBlock.getDbId() + "'";
-            try(ResultSet rs = statement.executeQuery(check_existing_request)){
+            try(Statement st = conn.createStatement(); 
+                ResultSet rs = st.executeQuery(check_existing_request)){
                 if(rs.next()) {
                     System.out.println("Error: Skill already exists in this SkillBlock !");
                     return false;
@@ -789,7 +804,8 @@ public class DatabaseHandler {
 
     public Skill getSkillByName(int sbId, String name) {
         String sql = "SELECT * FROM " + SKILL_TABLE_NAME + " WHERE `" + SKILL_DB_NAME + "`='" + name + "' AND `" + SKILL_SKILLBLOCK_ID + "`='" + sbId + "'";
-        try(ResultSet rs = statement.executeQuery(sql);) {
+        try(Statement st = conn.createStatement(); 
+            ResultSet rs = st.executeQuery(sql)) {
             if(rs.next()){
                 return new Skill(rs.getInt(1), rs.getInt(4), rs.getString(2), rs.getString(3), rs.getBoolean(5));
             }
@@ -803,7 +819,8 @@ public class DatabaseHandler {
 
     public Skill getSkillById(int id) {
         String sql = "SELECT * FROM " + SKILL_TABLE_NAME + " WHERE `id`='" + id + "'";
-        try(ResultSet rs = statement.executeQuery(sql);) {
+        try(Statement st = conn.createStatement(); 
+            ResultSet rs = st.executeQuery(sql)) {
             if(rs.next()){
                 return new Skill(rs.getInt(1), rs.getInt(4), rs.getString(2), rs.getString(3), rs.getBoolean(5));
             }
@@ -930,7 +947,8 @@ public class DatabaseHandler {
             }
 
             String check_existing_request = "SELECT * FROM " + USER_SKILLS_TABLE_NAME + " WHERE `" + USER_SKILLS_USER_ID + "`='" + userId + "' AND `" + USER_SKILLS_SKILL_ID + "`='" + skill.getDbId() + "'";
-            try(ResultSet rs = statement.executeQuery(check_existing_request)){
+            try(Statement st = conn.createStatement(); 
+                ResultSet rs = st.executeQuery(check_existing_request)){
                 if(rs.next()) {
                     System.out.println("Error: Skill request already exists in user ones !");
                     return false;
@@ -991,7 +1009,8 @@ public class DatabaseHandler {
             }
 
             String check_existing_request = "SELECT * FROM " + USER_SKILLS_TABLE_NAME + " WHERE `" + USER_SKILLS_USER_ID + "`='" + userId + "' AND `" + USER_SKILLS_SKILL_ID + "`='" + skill.getDbId() + "'";
-            try(ResultSet rs = statement.executeQuery(check_existing_request)){
+            try(Statement st = conn.createStatement(); 
+                ResultSet rs = st.executeQuery(check_existing_request)){
                 if(!rs.next()) {
                     System.out.println("Error: Skill request don't exist in user ones !");
                     return false;
@@ -1050,7 +1069,8 @@ public class DatabaseHandler {
             }
 
             String check_existing_request = "SELECT * FROM " + USER_SKILLS_TABLE_NAME + " WHERE `" + USER_SKILLS_USER_ID + "`='" + userId + "' AND `" + USER_SKILLS_SKILL_ID + "`='" + skill.getDbId() + "'";
-            try(ResultSet rs = statement.executeQuery(check_existing_request)){
+            try(Statement st = conn.createStatement(); 
+                ResultSet rs = st.executeQuery(check_existing_request)){
                 if(!rs.next()) {
                     System.out.println("Error: Skill request don't exist in user ones !");
                     return false;
