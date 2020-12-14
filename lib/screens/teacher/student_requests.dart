@@ -237,7 +237,7 @@ class _StudentRequestsPageState extends State<StudentRequestsPage> {
                         },
                       );
                     } else {
-                      lv = Center(child: CircularProgressIndicator());
+                      lv = Center(child: Container());
                     }
                     return lv;
                   })),

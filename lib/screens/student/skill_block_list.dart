@@ -118,7 +118,7 @@ class _SkillBlockListState extends State<SkillBlockList> {
                       ),
                       onRefresh: getRemoteData);
                 } else {
-                  lv = Center(child: CircularProgressIndicator());
+                  lv = Center(child: Container());
                 }
                 return lv;
               }),
