@@ -48,8 +48,14 @@ class MenuDrawer extends StatelessWidget {
             onTap: () {
               User.loggedInUser = null;
               Navigator.pop(context);
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => LoginPage()));
+              //Navigator.push(context,
+              //    MaterialPageRoute(builder: (context) => LoginPage()));
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => LoginPage(),
+                  ),
+                  (route) => false);
             },
           )
         ],
@@ -101,8 +107,14 @@ class MenuDrawerTeacher extends StatelessWidget {
             onTap: () {
               User.loggedInUser = null;
               Navigator.pop(context);
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => LoginPage()));
+              //Navigator.push(context,
+              //    MaterialPageRoute(builder: (context) => LoginPage()));
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => LoginPage(),
+                  ),
+                  (route) => false);
             },
           )
         ],

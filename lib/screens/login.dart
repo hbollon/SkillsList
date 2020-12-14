@@ -52,102 +52,11 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
   bool _buttonIsActivated = true;
+  TextEditingController usernameController = new TextEditingController();
+  TextEditingController passwordController = new TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController usernameController = new TextEditingController();
-    var usernameField = TextField(
-      controller: usernameController,
-      obscureText: false,
-      style: style,
-      decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-          hintText: "Username",
-          border:
-              OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
-    );
-
-    TextEditingController passwordController = new TextEditingController();
-    var passwordField = TextField(
-      controller: passwordController,
-      obscureText: true,
-      style: style,
-      decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-          hintText: "Password",
-          border:
-              OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
-    );
-
-    var loginButton = Material(
-      elevation: 5.0,
-      borderRadius: BorderRadius.circular(30.0),
-      color: _buttonIsActivated ? Colors.deepPurple : Colors.grey,
-      child: MaterialButton(
-        minWidth: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-        onPressed: !_buttonIsActivated
-            ? null
-            : () {
-                setState(() {
-                  _buttonIsActivated = !_buttonIsActivated;
-                });
-                Future<bool> output =
-                    login(usernameController.text, passwordController.text);
-                output.then((value) {
-                  if (value) {
-                    Navigator.pop(context);
-                    if (User.loggedInUser.role.name == "Student") {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => SkillBlockList()),
-                      );
-                    } else if (User.loggedInUser.role.name == "Teacher") {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => SkillBlockListTeacher()),
-                      );
-                    }
-                  } else {
-                    Scaffold.of(context).showSnackBar(SnackBar(
-                      content: Text(
-                          "Logging failed! Please check your credentials."),
-                    ));
-                  }
-                });
-                setState(() {
-                  _buttonIsActivated = !_buttonIsActivated;
-                });
-              },
-        child: Text("Login",
-            textAlign: TextAlign.center,
-            style: style.copyWith(
-                color: Colors.white, fontWeight: FontWeight.bold)),
-      ),
-    );
-
-    var registerButon = Material(
-      elevation: 5.0,
-      borderRadius: BorderRadius.circular(30.0),
-      color: Colors.deepPurple,
-      child: MaterialButton(
-        minWidth: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => RegisterPage()),
-          );
-        },
-        child: Text("Register",
-            textAlign: TextAlign.center,
-            style: style.copyWith(
-                color: Colors.white, fontWeight: FontWeight.bold)),
-      ),
-    );
-
     return Scaffold(
       body: Center(
         child: Container(
@@ -165,17 +74,104 @@ class _LoginPageState extends State<LoginPage> {
                       size: 140.0,
                     )),
                 SizedBox(height: 45.0),
-                usernameField,
+                TextField(
+                  controller: usernameController,
+                  obscureText: false,
+                  style: style,
+                  decoration: InputDecoration(
+                      contentPadding:
+                          EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                      hintText: "Username",
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(32.0))),
+                ),
                 SizedBox(height: 25.0),
-                passwordField,
+                TextField(
+                  controller: passwordController,
+                  obscureText: true,
+                  style: style,
+                  decoration: InputDecoration(
+                      contentPadding:
+                          EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                      hintText: "Password",
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(32.0))),
+                ),
                 SizedBox(
                   height: 35.0,
                 ),
-                loginButton,
+                Material(
+                  elevation: 5.0,
+                  borderRadius: BorderRadius.circular(30.0),
+                  color: _buttonIsActivated ? Colors.deepPurple : Colors.grey,
+                  child: MaterialButton(
+                    minWidth: MediaQuery.of(context).size.width,
+                    padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                    onPressed: !_buttonIsActivated
+                        ? null
+                        : () {
+                            setState(() {
+                              _buttonIsActivated = !_buttonIsActivated;
+                            });
+                            Future<bool> output = login(usernameController.text,
+                                passwordController.text);
+                            output.then((value) {
+                              if (value) {
+                                Navigator.pop(context);
+                                if (User.loggedInUser.role.name == "Student") {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => SkillBlockList()),
+                                  );
+                                } else if (User.loggedInUser.role.name ==
+                                    "Teacher") {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            SkillBlockListTeacher()),
+                                  );
+                                }
+                              } else {
+                                Scaffold.of(context).showSnackBar(SnackBar(
+                                  content: Text(
+                                      "Logging failed! Please check your credentials."),
+                                ));
+                              }
+                            });
+                            setState(() {
+                              _buttonIsActivated = !_buttonIsActivated;
+                            });
+                          },
+                    child: Text("Login",
+                        textAlign: TextAlign.center,
+                        style: style.copyWith(
+                            color: Colors.white, fontWeight: FontWeight.bold)),
+                  ),
+                ),
                 SizedBox(
                   height: 15.0,
                 ),
-                registerButon,
+                Material(
+                  elevation: 5.0,
+                  borderRadius: BorderRadius.circular(30.0),
+                  color: Colors.deepPurple,
+                  child: MaterialButton(
+                    minWidth: MediaQuery.of(context).size.width,
+                    padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => RegisterPage()),
+                      );
+                    },
+                    child: Text("Register",
+                        textAlign: TextAlign.center,
+                        style: style.copyWith(
+                            color: Colors.white, fontWeight: FontWeight.bold)),
+                  ),
+                ),
                 SizedBox(
                   height: 15.0,
                 ),
