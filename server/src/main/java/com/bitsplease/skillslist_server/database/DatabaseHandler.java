@@ -696,6 +696,8 @@ public class DatabaseHandler {
     public boolean updateSkill(String sbName, Skill skill) {
         try {
             SkillBlock skillblock = getSkillBlock(sbName);
+            if(skillblock == null)
+                return false;
 
             String sql = "UPDATE " + SKILL_TABLE_NAME + " SET " + 
             SKILL_DB_NAME + "=?, " + 
@@ -723,10 +725,15 @@ public class DatabaseHandler {
 
     public boolean deleteSkill(String sbName, String skillname){
         SkillBlock skillblock = getSkillBlock(sbName);
+        if(skillblock == null)
+            return false;
+
         Skill skill;
-        if(skillname != null)
+        if(skillname != null) {
             skill = getSkillByName(skillblock.getDbId(), skillname);
-        else {
+            if(skill == null)
+                return false;
+        } else {
             System.out.println("Skill delete failed: Invalid skillname argument.");
             return false;
         }
@@ -754,6 +761,9 @@ public class DatabaseHandler {
 
     public boolean deleteSkill(String sbName, Skill skill){
         SkillBlock skillblock = getSkillBlock(sbName);
+        if(skillblock == null)
+            return false;
+
         if(skill.getDbId() == 0) {
             if(skill.getSkillName() != null)
                 skill = getSkillByName(skillblock.getDbId(), skill.getSkillName());
@@ -786,6 +796,9 @@ public class DatabaseHandler {
 
     public Skill[] getAllSkillFromSkillBlock(String skillblockname) {
         SkillBlock skillBlock = getSkillBlock(skillblockname);
+        if(skillBlock == null)
+            return null;
+
         String sql = "SELECT * FROM " + SKILL_TABLE_NAME + " WHERE " + SKILL_SKILLBLOCK_ID + "=" + skillBlock.getDbId();
         ArrayList<Skill> skills = new ArrayList<Skill>();
         try(Statement st = conn.createStatement(); 
@@ -852,6 +865,8 @@ public class DatabaseHandler {
 
     public Skill[] getAllSkillOfSkillblockByUser(String username, String skillblockName) {
         Skill[] skillblockSkills = getAllSkillFromSkillBlock(skillblockName);
+        if(skillblockSkills == null)
+            return null;
 
         String sql = "SELECT " + USER_SKILLS_SKILL_ID + ", " + USER_SKILLS_SKILL_STATUS + " FROM " + USER_SKILLS_TABLE_NAME + " WHERE `" + USER_SKILLS_USER_ID + "`='" + getUserId(username) + "'";
         ArrayList<Skill> userSkills = new ArrayList<Skill>();
@@ -881,6 +896,8 @@ public class DatabaseHandler {
 
     public Skill[] getAllSkillOfUserBySkillblock(String username, String skillblockName) {
         Skill[] skillblockSkills = getAllSkillFromSkillBlock(skillblockName);
+        if(skillblockSkills == null)
+            return null;
 
         String sql = "SELECT " + USER_SKILLS_SKILL_ID + ", " + USER_SKILLS_SKILL_STATUS + " FROM " + USER_SKILLS_TABLE_NAME + " WHERE `" + USER_SKILLS_USER_ID + "`='" + getUserId(username) + "'";
         ArrayList<Skill> userSkills = new ArrayList<Skill>();
