@@ -162,7 +162,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     );
                   } else {
-                    lv = Center(child: CircularProgressIndicator());
+                    lv = Center(child: Container());
                   }
                   return lv;
                 })),
