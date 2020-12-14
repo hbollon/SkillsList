@@ -79,7 +79,7 @@ class _StudentListPageState extends State<StudentListPage> {
           appBar: AppBar(
             title: Text("Students"),
           ),
-          drawer: MenuDrawer(),
+          drawer: MenuDrawerTeacher(),
           body: Container(
               child: FutureBuilder(
                   future: fetch,

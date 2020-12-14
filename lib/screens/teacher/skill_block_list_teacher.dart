@@ -28,7 +28,8 @@ class _SkillBlockListTeacherState extends State<SkillBlockListTeacher> {
     print("Fetching Skill Blocks...");
 
     final url = sprintf("http://%s:8080/getAllSkillBlocks", [MyApp.ip]);
-    final response = await http.get(url, headers: {"Content-Type": "text"});
+    final response = await http
+        .get(url, headers: {"Content-Type": "application/json; charset=UTF-8"});
     print(response.body);
 
     var jsonResponse = json.decode(response.body);
