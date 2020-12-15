@@ -18,11 +18,7 @@ class SkillBlockList extends StatefulWidget {
 }
 
 class _SkillBlockListState extends State<SkillBlockList> {
-  List<SkillBlock> skillblocks;
-
-  _SkillBlockListState() {
-    this.skillblocks = new List();
-  }
+  List<SkillBlock> skillblocks = new List();
 
   Future<bool> fetchUserSkillBlocks() async {
     print("Fetching Skill Blocks...");
@@ -53,33 +49,38 @@ class _SkillBlockListState extends State<SkillBlockList> {
       print(response.body);
 
       var jsonResponse = json.decode(response.body);
-      final data = json.decode(jsonResponse["content"]);
+      if (jsonResponse["content"] != "") {
+        var data = json.decode(jsonResponse["content"]);
 
-      int nbVal = 0;
-      int tot = 0;
+        int nbVal = 0;
+        int tot = 0;
 
-      for (var skill in data) {
-        String name = skill["skillName"];
-        int dbId = skill["dbId"];
-        String desc = skill["skillDesc"];
-        int validate = skill["validate"];
+        for (var skill in data) {
+          String name = skill["skillName"];
+          int dbId = skill["dbId"];
+          String desc = skill["skillDesc"];
+          int validate = skill["validate"];
 
-        if (validate == 1) {
-          ++nbVal;
+          if (validate == 1) {
+            ++nbVal;
+          }
+          ++tot;
         }
-        ++tot;
-      }
 
-      double value;
+        double value;
 
-      if (tot != 0) {
-        value = nbVal / tot;
+        if (tot != 0) {
+          value = nbVal / tot;
+        } else {
+          value = 0.0;
+        }
+
+        SkillBlock s = SkillBlock(name, desc, value, sbId);
+        this.skillblocks.add(s);
       } else {
-        value = 0.0;
+        SkillBlock s = SkillBlock(name, desc, 0.0, sbId);
+        this.skillblocks.add(s);
       }
-
-      SkillBlock s = SkillBlock(name, desc, value, sbId);
-      this.skillblocks.add(s);
     }
     return true;
   }
