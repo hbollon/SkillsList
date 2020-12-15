@@ -76,17 +76,19 @@ class _StudentRequestsPageState extends State<StudentRequestsPage> {
       print(response2.body);
 
       var jsonResponse2 = json.decode(response2.body);
-      final data = json.decode(jsonResponse2["content"]);
+      if (jsonResponse2["content"] != "") {
+        final data = json.decode(jsonResponse2["content"]);
 
-      for (var skill in data) {
-        String name = skill["skillName"];
-        int dbId = skill["dbId"];
-        String desc = skill["skillDesc"];
-        int validate = skill["validate"];
+        for (var skill in data) {
+          String name = skill["skillName"];
+          int dbId = skill["dbId"];
+          String desc = skill["skillDesc"];
+          int validate = skill["validate"];
 
-        Skill s = Skill.bis(name, desc, sb.name);
-        if (validate == 0) {
-          this.skills.add(s);
+          Skill s = Skill.bis(name, desc, sb.name);
+          if (validate == 0) {
+            this.skills.add(s);
+          }
         }
       }
     }
