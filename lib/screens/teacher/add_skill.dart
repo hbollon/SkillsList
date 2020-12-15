@@ -26,6 +26,7 @@ class _AddSkillPageState extends State<AddSkillPage> {
   final formKey = GlobalKey<FormState>();
 
   String blockname;
+  bool isAutoValidate = false;
 
   _AddSkillPageState(this.blockname);
 
@@ -35,7 +36,7 @@ class _AddSkillPageState extends State<AddSkillPage> {
     Map skillMap = {
       'skillName': name,
       'skillDesc': desc,
-      'autoValidate': false,
+      'autoValidate': isAutoValidate,
     };
 
     Map map = {
@@ -80,6 +81,27 @@ class _AddSkillPageState extends State<AddSkillPage> {
             hintText: "Description",
             border:
                 OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
+      );
+
+      final autoValidationRow = Row(
+        mainAxisAlignment:
+            MainAxisAlignment.end,
+        children: <Widget>[
+          Text(
+            "Auto-validate:",
+          ),
+          const SizedBox(width: 8),
+          Switch(
+            value: isAutoValidate,
+            onChanged: (value) {
+              setState(() {
+                isAutoValidate = value;
+              });
+            },
+            activeTrackColor: Colors.lightGreenAccent,
+            activeColor: Colors.green,
+          )
+        ],
       );
 
       final createButton = Material(
@@ -145,6 +167,7 @@ class _AddSkillPageState extends State<AddSkillPage> {
                 nameField,
                 SizedBox(height: 25.0),
                 SizedBox(child: descriptionField, height: 360),
+                SizedBox(child: autoValidationRow),
                 SizedBox(
                   height: 64.0,
                 ),
