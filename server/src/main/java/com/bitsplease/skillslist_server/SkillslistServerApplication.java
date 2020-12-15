@@ -13,7 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SkillslistServerApplication {
 	public static DatabaseHandler db = new DatabaseHandler();
 	public static void main(String[] args) {
-		db.resetAll(true);
+		//db.resetAll(true);
 
 		Role teacherRole = new Role("Teacher", true, true);
 		Role studentRole = new Role("Student", true, true);
