@@ -61,14 +61,15 @@ class _ProfilePageState extends State<ProfilePage> {
       print(response2.body);
 
       var jsonResponse2 = json.decode(response2.body);
-      final data = json.decode(jsonResponse2["content"]);
-
-      for (var skill in data) {
-        int validate = skill["validate"];
-        if (validate == 1) {
-          ++nbValidatedSkills;
+      if (jsonResponse2["content"] != "") {
+        var data = json.decode(jsonResponse2["content"]);
+        for (var skill in data) {
+          int validate = skill["validate"];
+          if (validate == 1) {
+            ++nbValidatedSkills;
+          }
+          ++nbSkillsAvailable;
         }
-        ++nbSkillsAvailable;
       }
     }
     return true;
