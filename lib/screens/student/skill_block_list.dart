@@ -86,8 +86,9 @@ class _SkillBlockListState extends State<SkillBlockList> {
   }
 
   Future<void> getRemoteData() async {
-    setState(() {
-      fetchUserSkillBlocks();
+    var output = fetchUserSkillBlocks();
+    output.whenComplete(() {
+      setState(() {});
     });
   }
 
